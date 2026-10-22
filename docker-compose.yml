@@ -1,0 +1,28 @@
+name: gwent-classic
+services:
+  app:
+    image: ghcr.io/maintainer64/gwent-classic:${IMAGE_TAG:-latest}
+    build: .
+    init: true
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${PORT:-8080}:8080"
+    environment:
+      LISTEN_ADDR: ":8080"
+      DATA_DIR: /data
+      STATIC_DIR: /app/public
+      COOKIE_SECURE: "${COOKIE_SECURE:-false}"
+      PUBLIC_ORIGIN: "${PUBLIC_ORIGIN:-}"
+    volumes:
+      - gwent-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    mem_limit: 256m
+    cpus: 1
+volumes:
+  gwent-data:

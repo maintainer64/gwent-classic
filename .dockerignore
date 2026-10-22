@@ -1,0 +1,14 @@
+.git
+node_modules
+web/node_modules
+web/dist
+outputs
+*.patch
+*.zip
+.DS_Store
+
+web/public
+web/test-results
+web/playwright-report
+data
+.idea

@@ -1,38 +1,107 @@
-# gwent-classic
-![cover](https://user-images.githubusercontent.com/26311830/116256903-f1599b00-a7b6-11eb-84a1-16dcb5c9bfc6.jpg)
+# Гвинт — Go + TypeScript
 
-A browser remake of the original Gwent minigame from The Witcher 3: Wild Hunt including all cards from the DLC. To play, download the repo and open index.html in a browser. For the best experience, play in fullscreen which can be toggled in most browsers with F11.
+Браузерный прототип классического Гвинта из The Witcher 3. Правила и состояние
+матча выполняются на Go; самостоятельный клиент написан на TypeScript, React
+и Motion. Старые JavaScript-файлы сохранены как эталон для проверок, в новую
+production-сборку они не входят.
 
-## Rules
-The game is played in the same way as the original. The player aims to win two of three rounds, where victory within a given round is determined by whoever scores the most points. 
+## Запуск
 
-#### Cards and Points
-Points are obtained by placing down unit cards, each with their corresponding values. Some unit cards have special effects as denoted by a symbol on their left side. The cards and their effects can be examined by selecting them or the row they have been palced on. The game also includes a nubmer of special cards that apply effects like negative weather conditions or bosting card points when played.
+```sh
+docker compose up -d --build
+```
 
-#### Turns
-A turn consists of playing a single card. Your opponent then does the same until either one of you passes. At this point the remaining player can continue to place cards until they decide to pass. When both players have passed the round is ended. In addition of placing cards, they player may also activate their leader ability by clicking on their leader if it is available to them.
+Открыть **http://localhost:8080**. Для планшета или второго компьютера в той же
+сети:
 
-#### Factions
-The faction you pick will affect your game in three ways. It limits the specific cards you can use to neutral cards, special cards, and the unit cards in your faction. This includes the leader card that you can pick and the corresponding leader ability. Each faction also has a special effect that is displayed when selecting a faction and at the top of the customization screen for the currently selected faction.
+```sh
+BIND_ADDRESS=0.0.0.0 docker compose up -d --build
+```
 
-## Features
-#### All cards from the TW3 + DLC + NextGen
-All cards from the base games and DLC can be used by you and the AI. This includes the additions from Hearts of Stone and Skellige as a playable deck from Blood and Wine. As of the next-gen update, the Roach card is now also included, along with adding the muster ability to the Geralt and Ciri cards. The total count of cards available corresponds to the number you can find in the original game.
+Открыть `http://IP_КОМПЬЮТЕРА:8080` на обоих устройствах и отправить другу ссылку
+из комнаты. IP в ссылке берётся из адреса, по которому открыт сайт.
+Параметры порта и HTTPS приведены в [.env.example](.env.example).
 
-#### Faithful to the original minigame
-This remake aims to resemble the orignal minigame as closely as possible from the font to the UI layout and notifications. Some changes have been made in the form of buttons for settings, exiting a game, and passing your current turn. The deck customization screen also includes changes to upload and download decks, including being able to upload a custom opponent deck.
+## Возможности
 
-#### AI opponent
-When you start a game you will face off againsts a fully implemented AI oponent. The opponent uses premade decks and will make intelligent decisions based on the cards in its hand, on the table, and in the discard piles.
+- Игра с другом по приглашению: WebSocket, отдельные скрытые руки, серверная
+  проверка каждого хода и восстановление после обрыва соединения.
+- Пять фракций, 22 лидера и каталог из 216 определений карт оригинала, включая
+  служебные карты превращений. Интерфейс на русском; названия и эффекты карт
+  переключаются между русским и английским через RU/EN.
+- Боты трёх сложностей с тремя характерами: сбалансированный, агрессивный,
+  экономный. Случайная фракция, выбранные фракция/лидер либо своя колода.
+- Общий колодострой для игрока и бота: несколько именованных колод, лидеры,
+  поиск, фильтры по ряду/типу/способности, сортировка, количество копий,
+  автосборка, проверка состава, импорт/экспорт JSON и перенос старых `gc-deck-*`.
+- Замена стартовой руки, выбор первого игрока Скоя’таэлей, приманка, медики
+  и цепочки возрождения, выбор целей лидеров, просмотр сброса и своей колоды.
+- Шесть рядов, погода, жизни, настраиваемый таймер, история результатов раундов,
+  последовательные анимации ходов и звуки. Уменьшение движения учитывается.
+- Поле по оригинальному образцу: деревянная доска, крупные карты, лидеры
+  слева, колоды и сброс справа, рука снизу. Адаптация под компьютер и планшет;
+  на узком телефоне поле сдвигается внутри игровой области.
+- Полные карты собираются из одного чистого SM-арта, ленты фракции, значков,
+  названия и описания. Отдельная папка LG и текст внутри изображений не нужны.
+- Просмотр руки и замена стартовых карт — галерея поверх стола: выбранная карта
+  увеличена. ЛКМ сразу выбирает карту с эффектом справа, ПКМ открывает галерею руки.
+  На планшете для галереи есть кнопка «Рассмотреть руку». Отряд ставится нажатием
+  в любое место подсвеченного ряда, погода подтверждается кнопкой.
+  Медик и цепочка медиков выбирают отряд из сброса в такой же галерее.
+  Просмотр своего и чужого сброса тоже использует галерею: верхняя карта стопки,
+  перелистывание, описание способности и отдельный вид для пустого сброса.
+  После двух стартовых замен игрок автоматически готов; раунд начинается, когда готовы оба.
+  Первый игрок, смена хода и результаты раундов показаны полосой с оригинальными значками.
+- Итоги партии — отдельный экран поверх поля: оригинальные эмблемы победы,
+  поражения и ничьей, русские надписи, крупный счёт раундов и гербы фракций.
+- В настройках — отдельные выключатели и громкость музыки/эффектов. Музыка
+  хранится на сервере и запускается после первого нажатия. Фоновый трек:
+  [The Old Tower Inn — RandomMind](https://opengameart.org/content/medieval-the-old-tower-inn), CC0;
+  источник и лицензия — `sfx/music/CREDITS.txt`.
+- Любое число минут на ход, включая дробные значения. Мягкий режим предупреждает
+  и показывает превышение; жёсткий автоматически объявляет пас. 0 отключает таймер.
+  Время выбирается до начала партии и одинаково для обоих игроков.
 
-#### Customize, save and upload decks
-You can select a faction to play as at the top of the screen and then add and remove cards from your deck by clicking on the cards in either scroll-down menu. You can also pick a leader card by selecting the current leader and scrolling through the options for that faction. At the top of the screen there are buttons to upload and download decks to play with. These are stored in json format and are checked to see if they comply with their assigned faction and maximum card counts. At the bottom of the screen, you can also customize your opponent by uploading the deck they will play with. 
+Комнаты хранятся на сервере в Docker volume `gwent-data` и живут 24 часа от
+создания. Колоды и настройки сохраняются в этом браузере; для переноса на
+другое устройство есть JSON-экспорт. Для возвращения в комнату нужна та же
+cookie браузера. `docker compose down` сохраняет volume.
 
-#### Persistent settings
-The game has settings for toggling music, sound effects and showing the in-game notifications. These settings along with customizations like your faction decks are saved in the browser meaning that you can change faction, reload the page, or close the browser, and your settings will be remembered.
+## Разработка и проверки
 
-#### Music tracks
-The gwent music tracks are streamed from YouTube and can be toggled by pressing the music icon in the center of the customization screen or the bottom-left of the game screen. For some browsers, the page may need to be refreshed once before the music can be activated.
+Нужны Go 1.23+ и Node.js 22.12+.
 
-#### Sound effects
-Most sound effects for gameplay and menus have been added and integrated and can be toggled of via the speaker button. Courtesy of [RandomPianist](https://github.com/RandomPianist/gwent-classic-v3.1) for providing many of the sound effects that I have since edited for this version.
+```sh
+cd web
+npm ci
+npm run build
+cd ..
+go run ./cmd/gwent
+```
+
+Для разработки клиента запустить `npm run dev` в `web/` при работающем Go на
+8080. Vite раздаёт те же изображения и звуки, проксирует HTTP и WebSocket.
+
+```sh
+go test -race ./...
+go vet ./...
+node scripts/score-goldens.mjs --check
+node scripts/scorch-goldens.mjs --check
+cd web
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
+
+Playwright сам поднимает отдельный Go-сервер с временным хранилищем.
+`GWENT_E2E_URL=http://localhost:8080 npm run test:e2e` проверяет уже запущенную
+сборку. Тесты создают собственные анонимные комнаты.
+
+Референс поля и источники изображений: [VISUAL_REFERENCE.md](VISUAL_REFERENCE.md).
+Подробности протокола и размещения: [MULTIPLAYER.md](MULTIPLAYER.md).
+Проверенные правила и границы сравнения с оригиналом: [PARITY.md](PARITY.md).
+Исторический аудит и выполненный план: [MIGRATION_PLAN.md](MIGRATION_PLAN.md).
+
+Оригинальные изображения и звуки проекта используются повторно. За часть
+исходных звуков — благодарность [RandomPianist](https://github.com/RandomPianist/gwent-classic-v3.1).

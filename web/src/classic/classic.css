@@ -1,0 +1,108 @@
+/* Presentation extension, deliberately scoped. Original style.css stays intact. */
+[hidden] { display: none !important; }
+#classic-online-notice, #setup-notice { color: #e7a585; }
+#classic-online-hud { position: fixed; top: .45vw; right: .45vw; z-index: 120;
+    color: #ead7b4; font-size: .85vw; display: flex; flex-direction: column; align-items: flex-end;
+    white-space: nowrap; }
+#online-hud-toggle { display: flex; align-items: center; gap: .45vw; padding: .28vw .62vw; min-height: 26px;
+    background: linear-gradient(#2a2016f2, #140f0af2); border: 1px solid #937440; border-radius: .25vw;
+    color: #ead7b4; font: 600 .85vw system-ui, sans-serif; cursor: pointer; box-shadow: 0 .15vw .5vw #000a; }
+#online-hud-toggle:hover { box-shadow: 0 0 .55vw goldenrod; }
+#online-hud-dot { width: .45vw; height: .45vw; border-radius: 50%; background: #8c7a5d; box-shadow: 0 0 .25vw #000; }
+#online-hud-dot.online-turn-me { background: #d9b45c; box-shadow: 0 0 .4vw #d9b45c; }
+#classic-online-hud .classic-hud-body { display: none; margin-top: .25vw; width: 21vw; padding: .55vw .7vw;
+    background: rgba(16,12,9,.96); border: 1px solid #937440; border-radius: .2vw; box-shadow: 0 .2vw .8vw #000;
+    flex-direction: column; gap: .35vw; font-size: .78vw; white-space: normal; }
+#classic-online-hud.classic-hud-open .classic-hud-body { display: flex; }
+#online-match-state { color: #cdb98f; }
+#classic-online-hud .classic-hud-actions { display: flex; gap: .4vw; flex-wrap: wrap; }
+#classic-online-hud button, #classic-online-overlay button { background: #221910; border: 1px solid #977538; color: #ead7b4; padding: .3vw .55vw; cursor: pointer; }
+#classic-online-hud .classic-hud-actions button { padding: .3vw .55vw; font-size: .78vw; min-height: 28px; min-width: 64px; }
+#classic-online-hud button:hover, #classic-online-overlay button:hover { box-shadow: 0 0 .55vw goldenrod; }
+#online-match-error { color: #ffb8a9; }
+#online-match-hint { color: #e8d29c; }
+#online-match-hint:empty, #online-match-error:empty { display: none; }
+
+/* The board is a 16:9 desktop scene; on a portrait phone the cards would be
+ * postage stamps. Ask for landscape instead of pretending it fits. */
+#classic-rotate-hint { display: none; }
+@media (max-width: 900px) and (orientation: portrait) {
+  #classic-rotate-hint {
+    display: block; position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+    z-index: 130; padding: 8px 14px; border: 1px solid #937440; border-radius: 4px;
+    background: rgba(16,12,9,.95); color: #ead7b4; font: 600 12px system-ui, sans-serif;
+    box-shadow: 0 2px 10px #000; pointer-events: none; white-space: nowrap;
+  }
+}
+/* Above the setup screen (205) and main menu (210): the bot-deck editor and
+ * target modals are launched from those screens. */
+#classic-online-overlay { position: fixed; z-index: 220; top: 34%; left: 30%; width: 40%;
+    background: rgba(14,11,10,.98); border: 2px solid #aa8746; box-shadow: 0 0 2vw #000;
+    color: #e5c99b; text-align: center; padding: 1.4vw; font-size: 1.2vw; }
+#classic-online-overlay .classic-invite-link { margin: .9vw auto; padding: .55vw .8vw; max-width: 90%;
+    background: #12100c; border: 1px dashed #b78b46; color: #f0dcae; font: 600 .95vw 'Courier New',monospace;
+    word-break: break-all; }
+#classic-online-overlay small { display: block; margin-top: .8vw; color: #b29c77; font-size: .8vw; }
+#classic-online-overlay.classic-bot-editor { top: 7%; left: 15%; width: 70%; height: 83%; overflow: auto; }
+#classic-online-overlay .classic-deck-cards { display: grid; grid-template-columns: repeat(7, 1fr); gap: .8vw; padding: 1vw; }
+#classic-online-overlay .classic-deck-option { height: 14vw; border: 0; border-radius: .4vw; padding: 0;
+    background-color: transparent; background-position: center; background-size: contain; background-repeat: no-repeat; position: relative; cursor: pointer; }
+#classic-online-overlay .classic-deck-option:hover { filter: drop-shadow(0 0 .5vw goldenrod); }
+#classic-online-overlay .classic-deck-option span { position: absolute; right: 0; bottom: 0; padding: .3vw;
+    background: #20150bd9; border: 1px solid #af874b; font-weight: bold; }
+.card.classic-selected { box-shadow: 0 0 .9vw gold; transform: translateY(-.7vw); z-index: 5; }
+.card.classic-selectable:hover { outline: .15vw solid gold; }
+.classic-disabled { opacity: .4; pointer-events: none; }
+#classic-online-hud[hidden], #classic-online-overlay[hidden] { display: none !important; }
+@media (max-width: 700px) {
+  #classic-online-hud { top: 4px; right: 4px; font-size: 11px; }
+  #online-hud-toggle { font-size: 11px; padding: 4px 8px; }
+  #classic-online-hud .classic-hud-body { width: min(78vw, 300px); font-size: 12px; }
+  #classic-online-hud .classic-hud-actions button { font-size: 12px; padding: 5px 8px; }
+  #classic-online-overlay { font-size: 13px; padding: 14px; }
+  #classic-online-overlay .classic-invite-link { font-size: 11px; padding: 6px 8px; }
+}
+
+#leader-me .leader-container, #leader-op .leader-container { background-size: contain; background-position: center; background-repeat: no-repeat; }
+
+/* Target selection uses the same large card images as the original carousel. */
+#classic-online-overlay.classic-target-modal, #classic-online-overlay.classic-mulligan-modal, #classic-online-overlay.classic-medic-modal {top: 16%;left:12%;width:76%;max-height:75%;overflow:auto;}
+.classic-target-cards {display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:.8vw;margin:1vw 0;}
+.classic-target-card {height:17vw;width:9.25vw;border:1px solid #8e6b2f;border-radius:.6vw;cursor:pointer;background-size:cover;background-position:center;}
+.classic-target-card:hover {transform:translateY(-.3vw);box-shadow:0 0 1vw goldenrod;}
+
+/* Keep the original card artwork and hover behavior, animate server-confirmed placements. */
+@keyframes classic-card-enter { from {opacity:.4;transform:translateY(-1.5vw) scale(.85);filter:brightness(2)} to {opacity:1;transform:none;filter:none} }
+.card.classic-card-enter {animation:classic-card-enter 460ms cubic-bezier(.14,.74,.4,1);}
+@keyframes classic-scorch-enter {from{box-shadow:0 0 2vw orange;filter:brightness(2)}to{box-shadow:none;filter:none}}
+.card.classic-scorch-enter {animation:classic-scorch-enter 800ms ease-out;}
+@media(prefers-reduced-motion:reduce) {.card.classic-card-enter,.card.classic-scorch-enter {animation:none;}}
+
+/* The classic deck editor is still the original page. */
+#classic-deck-back {position:absolute;left:1.5%;top:2%;z-index:90;background:#1b1711e8;border:1px solid #ad8d5a;color:#e4cc98;font:600 clamp(11px,1vw,17px) system-ui,sans-serif;padding:.4vw .8vw;cursor:pointer}
+#classic-deck-back:hover{box-shadow:0 0 10px #a58951;}
+
+/* Deck editor: the original preview_count.png badge was barely readable, and
+ * nothing marked cards already sitting in the deck. Make both explicit. */
+#card-bank > .card-lg, #card-deck > .card-lg { position: relative; }
+#card-bank > .card-lg > div, #card-deck > .card-lg > div {
+  position: absolute; top: auto; left: auto; right: .3vw; bottom: .3vw;
+  width: auto; min-width: 1.35vw; height: 1.35vw; padding: 0 .3vw;
+  display: flex; align-items: center; justify-content: center; gap: .15vw;
+  background: rgba(18,13,8,.9); border: 1px solid #b08c48; border-radius: .75vw;
+  color: #f6e2b4; font: 700 .8vw/1 system-ui, sans-serif; text-shadow: 0 1px 2px #000;
+}
+#card-bank > .card-lg.classic-count-zero > div { color: #8f7b58; border-color: #6c5a3d; }
+#card-bank > .card-lg.classic-in-deck { box-shadow: inset 0 0 0 .18vw #c9a45c, 0 0 1vw #c9a45c66; }
+#card-bank > .card-lg.classic-in-deck::after {
+  content: attr(data-in-deck); position: absolute; left: .3vw; top: .3vw;
+  padding: .1vw .35vw; background: #c9a45cf2; color: #1b140a;
+  font: 700 .68vw system-ui, sans-serif; border-radius: .3vw;
+}
+
+/* Subtle current-turn cues on the original battlefield, without replacing art. */
+body.classic-local-turn #stats-me { filter:drop-shadow(0 0 .75vw #c5a765); }
+body.classic-local-turn #field-hand { filter:drop-shadow(0 0 .4vw #b99453); }
+body.classic-opponent-turn #stats-op { filter:drop-shadow(0 0 .6vw #ac7840); }
+#stats-me, #stats-op, #field-hand { transition:filter .4s ease; }
+@media (prefers-reduced-motion:reduce) {#stats-me,#stats-op,#field-hand{transition:none;}}

@@ -1,0 +1,53 @@
+package game
+
+// Card text describes the authoritative Go rules. Images contain artwork only;
+// clients select either language without changing card IDs or saved decks.
+var AbilityDescriptionsEnglish = map[string]string{
+	"hero":          "Hero. Unaffected by weather, Scorch, Decoy and boosts from other cards.",
+	"spy":           "Spy. Place on your opponent's side and draw two cards from your deck.",
+	"muster":        "Muster. Summon related cards from your hand and deck to their combat rows.",
+	"bond":          "Tight Bond. Multiply the strength of identical units in the same row by their number.",
+	"morale":        "Morale Boost. Add 1 strength to every other non-Hero unit in the row.",
+	"medic":         "Medic. Return a chosen non-Hero unit from your discard pile to the battlefield. Can continue a chain of Medics.",
+	"horn":          "Commander's Horn. Double the strength of other non-Hero units in the row. Horns do not stack.",
+	"decoy":         "Decoy. Return a chosen non-Hero unit from your battlefield to your hand and take its place.",
+	"scorch":        "Scorch. Destroy the strongest non-Hero units on the entire battlefield, including your own.",
+	"scorch_c":      "Close Combat Scorch. Destroy the strongest non-Hero units in your opponent's close combat row if its total strength is at least 10.",
+	"scorch_r":      "Ranged Scorch. Destroy the strongest non-Hero units in your opponent's ranged row if its total strength is at least 10.",
+	"scorch_s":      "Siege Scorch. Destroy the strongest non-Hero units in your opponent's siege row if its total strength is at least 10.",
+	"frost":         "Biting Frost. Reduce the base strength of non-Hero close combat units on both sides to 1.",
+	"fog":           "Impenetrable Fog. Reduce the base strength of non-Hero ranged units on both sides to 1.",
+	"rain":          "Torrential Rain. Reduce the base strength of non-Hero siege units on both sides to 1.",
+	"storm":         "Skellige Storm. Apply Fog and Rain to the ranged and siege rows on both sides.",
+	"clear":         "Clear Weather. Remove all weather effects from the battlefield.",
+	"berserker":     "Berserker. Transform into a Vildkaarl under the effect of Mardroeme.",
+	"mardroeme":     "Mardroeme. Transform Berserkers in your row into Vildkaarls, including those played later.",
+	"avenger":       "Avenger. Summon the Bovine Defense Force when the Cow is removed from the battlefield.",
+	"avenger_kambi": "Avenger. Summon Hemdall when Kambi is removed from the battlefield.",
+	"vildkarrl":     "Transformed Berserker.",
+}
+
+var LeaderDescriptionsEnglish = map[string]string{
+	"foltest_king":            "Play Impenetrable Fog from your deck",
+	"foltest_lord":            "Clear all weather effects",
+	"foltest_siegemaster":     "Double the strength of your siege row",
+	"foltest_steelforged":     "Scorch your opponent's siege row",
+	"foltest_son":             "Scorch your opponent's ranged row",
+	"emhyr_imperial":          "Play Torrential Rain from your deck",
+	"emhyr_whiteflame":        "Passively cancel your opponent's leader ability",
+	"emhyr_emperor":           "Look at three cards in your opponent's hand",
+	"emhyr_relentless":        "Take a unit from your opponent's discard pile into your hand",
+	"emhyr_invader":           "Both players revive random units instead of choosing them",
+	"eredin_commander":        "Double the strength of your close combat row",
+	"eredin_bringer_of_death": "Return a unit from your own discard pile to your hand",
+	"eredin_destroyer":        "Discard two cards and choose one from your deck",
+	"eredin_king":             "Play a weather card from your deck",
+	"eredin_treacherous":      "Passively double the strength of all Spies",
+	"francesca_queen":         "Scorch your opponent's close combat row",
+	"francesca_beautiful":     "Double the strength of your ranged row",
+	"francesca_daisy":         "Passively draw an additional card at the start of the match",
+	"francesca_pureblood":     "Play Biting Frost from your deck",
+	"francesca_hope":          "Move Agile units to the rows that give them the highest strength",
+	"crach_an_craite":         "Shuffle both players' discard piles back into their decks",
+	"king_bran":               "Passively reduce the strength lost to weather",
+}
