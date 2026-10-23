@@ -1,0 +1,158 @@
+.card-language-toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid #af8b4b55;
+  border-radius: 5px;
+  background: #17130d;
+}
+.card-language-toggle button {
+  padding: 0 9px;
+  min-height: 30px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: #a38f6c;
+  font:
+    700 12px/1 'Gwent Sans',
+    sans-serif;
+}
+.card-language-toggle button[aria-pressed='true'] {
+  background: #af8b4b;
+  color: #1c160d;
+}
+.card-detail > .card-language-toggle {
+  display: flex;
+  width: max-content;
+  margin: 0 0 14px auto;
+}
+.hand-card-description > .card-language-toggle {
+  display: flex;
+  width: max-content;
+  margin-bottom: 16px;
+}
+.hand-card-kind {
+  display: block;
+}
+.match-menu > .card-language-toggle {
+  margin-bottom: 18px;
+}
+.card-faction-ribbon {
+  --ribbon: #807c71;
+  position: absolute;
+  z-index: 1;
+  left: 5%;
+  top: 3%;
+  width: 9%;
+  height: 39%;
+  background:
+    linear-gradient(90deg, #0006, transparent 22%, #ffffff30 35%, transparent 57%, #0007),
+    var(--ribbon);
+  box-shadow:
+    inset 1px 0 #e8cc7d77,
+    inset -1px 0 #e8cc7d77;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 93%, 0 100%);
+  pointer-events: none;
+}
+.card-faction-ribbon[data-faction='realms'] {
+  --ribbon: #234d87;
+}
+.card-faction-ribbon[data-faction='nilfgaard'] {
+  --ribbon: #342d20;
+}
+.card-faction-ribbon[data-faction='monsters'] {
+  --ribbon: #9b2927;
+}
+.card-faction-ribbon[data-faction='scoiatael'] {
+  --ribbon: #386333;
+}
+.card-faction-ribbon[data-faction='skellige'] {
+  --ribbon: #653e83;
+}
+.card-faction-ribbon[data-faction='special'],
+.card-faction-ribbon[data-faction='weather'] {
+  display: none;
+}
+.game-card .card-strength,
+.classic-row-icon,
+.classic-ability-icon {
+  z-index: 2;
+}
+.full-card {
+  width: 100%;
+  max-width: 330px;
+  margin: 0 auto;
+  border: 1px solid #ad884b;
+  border-radius: 5px;
+  background: #d1bf92;
+  box-shadow: 0 12px 30px #0007;
+  overflow: hidden;
+  container-type: inline-size;
+  color: #302617;
+}
+.full-card .full-card-art {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 309/444;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+.full-card-copy {
+  position: relative;
+  padding: 5cqw 6cqw 6cqw;
+  border-top: 2px solid #8a672c;
+  background:
+    radial-gradient(ellipse at 50% 0, #f2e4b9, transparent 85%),
+    linear-gradient(90deg, #8c6c3240, transparent 14%, transparent 86%, #8c6c3240), #cdb98b;
+  text-align: left;
+}
+.full-card-type {
+  display: block;
+  font:
+    400 3.4cqw/1.4 'Gwent Sans',
+    sans-serif;
+  color: #705b39;
+}
+.full-card h3 {
+  font:
+    400 7cqw/1.12 Georgia,
+    serif;
+  margin: 2.5cqw 0 3cqw;
+  color: #302414;
+  overflow-wrap: anywhere;
+}
+.full-card-ability {
+  display: block;
+  font:
+    700 4cqw/1.35 'Gwent Sans',
+    sans-serif;
+  color: #674825;
+  margin: 0 0 2cqw;
+}
+.full-card .full-card-copy p {
+  font:
+    400 4cqw/1.5 'Gwent Sans',
+    sans-serif;
+  color: #493a25;
+  margin: 0;
+}
+.dialog .card-detail {
+  max-width: 300px;
+}
+.hero-card {
+  height: auto;
+  border-radius: 5px;
+}
+.hero-card .full-card {
+  max-width: none;
+}
+@media (max-width: 600px) {
+  .app-header > .card-language-toggle {
+    display: none;
+  }
+}

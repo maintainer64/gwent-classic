@@ -1,0 +1,250 @@
+name: Verify, PR previews and releases
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  push:
+    branches: [main]
+  release:
+    types: [published]
+permissions:
+  contents: read
+concurrency:
+  group: gwent-multiplayer-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+      - name: Go race and vet checks
+        run: go test -race ./... && go vet ./...
+      - name: Client unit tests
+        working-directory: web
+        run: npm ci --no-audit --no-fund && npm test
+      - name: Verify golden scores against original JavaScript
+        run: node scripts/score-goldens.mjs --check && node scripts/scorch-goldens.mjs --check
+      - name: Build and unit-test multi-stage image
+        run: docker build -t ghcr.io/maintainer64/gwent-classic:ci .
+      - name: Start secured container
+        env:
+          PORT: '18085'
+          IMAGE_TAG: ci
+        run: docker compose up -d --no-build
+      - name: API smoke test (two separate cookie identities)
+        run: node scripts/api-smoke.mjs http://127.0.0.1:18085
+      - name: Install test browser
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+      - name: Browser tests against production container
+        working-directory: web
+        env:
+          GWENT_E2E_URL: http://127.0.0.1:18085
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: browser-results
+          path: web/test-results/
+          if-no-files-found: ignore
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs
+      - name: Stop
+        if: always()
+        run: docker compose down
+
+  # PR image has only dev-N. Do not grant package-write privileges to fork PRs.
+  publish-pr:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    needs: build-and-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.0
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/${{ github.repository }}:dev-${{ github.event.pull_request.number }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=gha,scope=pr-${{ github.event.pull_request.number }}
+          cache-to: type=gha,scope=pr-${{ github.event.pull_request.number }},mode=max
+
+  release-info:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      publish_latest: ${{ steps.check.outputs.publish_latest }}
+    steps:
+      - name: Validate version and protect latest
+        id: check
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_ID: ${{ github.event.release.id }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z][0-9A-Za-z.-]*)?$ ]]; then
+            echo "Expected vMAJOR.MINOR.PATCH[-prerelease]: $RELEASE_TAG" >&2
+            exit 1
+          fi
+          echo "version=${RELEASE_TAG#v}" >> "$GITHUB_OUTPUT"
+          publish_latest=false
+          if [[ "$IS_PRERELEASE" == "false" && "$RELEASE_TAG" != *-* ]]; then
+            # Only move latest if GitHub marks this the latest stable release.
+            latest_id=$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" --jq '.id')
+            if [[ "$latest_id" == "$RELEASE_ID" ]]; then publish_latest=true; fi
+          fi
+          echo "publish_latest=$publish_latest" >> "$GITHUB_OUTPUT"
+
+  publish-release-image:
+    if: github.event_name == 'release'
+    needs: [build-and-smoke, release-info]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.0
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ needs.release-info.outputs.version }}
+            ${{ needs.release-info.outputs.publish_latest == 'true' && format('ghcr.io/{0}:latest', github.repository) || '' }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ needs.release-info.outputs.version }}
+          cache-from: type=gha,scope=release
+          cache-to: type=gha,scope=release,mode=max
+
+  release-web:
+    if: github.event_name == 'release'
+    needs: release-info
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Build frontend
+        working-directory: web
+        run: npm ci --no-audit --no-fund && npm run build
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-web
+          path: web/dist/
+          if-no-files-found: error
+          retention-days: 3
+
+  release-archives:
+    if: github.event_name == 'release'
+    needs: [build-and-smoke, release-info, release-web]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        include:
+          - { os: linux, arch: amd64 }
+          - { os: linux, arch: 386 }
+          - { os: linux, arch: arm, variant: v7, goarm: '7' }
+          - { os: linux, arch: arm64 }
+          - { os: linux, arch: riscv64 }
+          - { os: linux, arch: ppc64le }
+          - { os: linux, arch: s390x }
+          - { os: linux, arch: loong64 }
+          - { os: windows, arch: amd64 }
+          - { os: windows, arch: 386 }
+          - { os: windows, arch: arm64 }
+          - { os: darwin, arch: amd64 }
+          - { os: darwin, arch: arm64 }
+          - { os: freebsd, arch: amd64 }
+          - { os: freebsd, arch: arm64 }
+          - { os: freebsd, arch: 386 }
+          - { os: openbsd, arch: amd64 }
+          - { os: openbsd, arch: arm64 }
+          - { os: netbsd, arch: amd64 }
+          - { os: netbsd, arch: arm64 }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-web
+          path: web/dist
+      - name: Package executable and all browser assets
+        env:
+          RELEASE_VERSION: ${{ needs.release-info.outputs.version }}
+          TARGET_OS: ${{ matrix.os }}
+          TARGET_ARCH: ${{ matrix.arch }}
+          TARGET_VARIANT: ${{ matrix.variant || '' }}
+          GOARM: ${{ matrix.goarm || '' }}
+        run: bash scripts/package-release.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: zip-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.variant || '' }}
+          path: dist/*.zip
+          if-no-files-found: error
+          retention-days: 7
+
+  attach-release-archives:
+    if: github.event_name == 'release'
+    needs: [release-info, release-archives]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: zip-*
+          merge-multiple: true
+          path: dist
+      - name: Generate checksums
+        run: cd dist && sha256sum ./*.zip > SHA256SUMS.txt
+      - name: Attach binaries to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" dist/*.zip dist/SHA256SUMS.txt --clobber --repo "$GITHUB_REPOSITORY"

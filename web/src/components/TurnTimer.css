@@ -1,0 +1,14 @@
+/* The clock lives inside the compact classic HUD panel, so it scales with the
+ * board (vw) instead of imposing a fixed pixel width. */
+#classic-turn-clock {display:flex;align-items:center;gap:.4vw;font:600 .76vw system-ui,sans-serif;color:#e4d5b0;white-space:nowrap;}
+#classic-turn-clock .classic-turn-label {white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#classic-turn-clock strong {font:700 1.05vw ui-monospace,monospace;color:#f2d59b;font-variant-numeric:tabular-nums;line-height:1;}
+#classic-turn-clock .classic-turn-track {position:relative;flex:1;min-width:2.2vw;height:.32vw;background:#46382c;overflow:hidden;border-radius:.4vw;}
+#classic-turn-clock .classic-turn-progress {height:100%;background:#bb9b57;transition:width 230ms linear;}
+#classic-turn-clock.classic-turn-urgent strong {color:#ff8c69;animation:classic-turn-pulse .8s ease-in-out infinite alternate;}
+#classic-turn-clock.classic-turn-urgent .classic-turn-progress {background:#e2614f;}
+#classic-turn-clock.classic-turn-over strong {color:#e15757;animation:none;}
+
+@keyframes classic-turn-pulse {from{opacity:.55}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){#classic-turn-clock.classic-turn-urgent strong{animation:none}}
+@media(max-width:700px){#classic-turn-clock{font-size:11px;gap:5px}#classic-turn-clock strong{font-size:14px}#classic-turn-clock .classic-turn-track{height:5px;min-width:34px}}

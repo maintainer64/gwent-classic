@@ -1,0 +1,182 @@
+.settings-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #b1925540;
+  background: transparent;
+  border-radius: 5px;
+  color: #d4bc90;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.settings-trigger svg {
+  width: 19px;
+  height: 19px;
+}
+.settings-trigger:hover {
+  background: #b1925519;
+}
+.timer-settings {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #b1925530;
+}
+.timer-settings h3,
+.audio-settings h3,
+.active-timer-settings h3,
+.language-settings h3 {
+  font:
+    400 19px/1.3 Georgia,
+    serif;
+  margin: 0 0 16px;
+  color: #e1c895;
+}
+.timer-settings > label {
+  color: #c7b38f;
+}
+.timer-settings input[type='number'] {
+  font-variant-numeric: tabular-nums;
+}
+.timer-settings small {
+  display: block;
+  color: #ab9774;
+  font-size: 12px;
+  margin: 9px 0 14px;
+}
+.timer-settings .segmented {
+  margin: 16px 0 0;
+}
+.timer-settings p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #bca784;
+  margin: 12px 0 0;
+}
+.timer-settings input[aria-invalid='true'] {
+  border-color: #c77d59;
+}
+.preferences-dialog {
+  width: min(94vw, 460px);
+  background: #201911;
+  border-color: #9f7d4688;
+  color: #d8c19a;
+  font-family: 'Gwent Sans', sans-serif;
+}
+.preferences-dialog > header h2 {
+  color: #ebd2a2;
+}
+.preferences-dialog input {
+  accent-color: #c49d52;
+}
+.preferences-dialog input[type='number'] {
+  background: #14100a;
+  border-color: #9f7d4666;
+  color: #ead1a2;
+}
+.preferences-dialog .segmented {
+  border-color: #a6814355;
+  background: #16110c;
+}
+.preferences-dialog .segmented button {
+  color: #bda57b;
+}
+.preferences-dialog .segmented button.active {
+  background: #af8844;
+  color: #20160a;
+}
+.audio-channel {
+  padding: 16px 0;
+  border-bottom: 1px solid #b1925524;
+}
+.audio-channel-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 16px;
+  color: #e0c69a;
+}
+.audio-channel-toggle input {
+  appearance: none;
+  position: relative;
+  width: 40px;
+  height: 24px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #a7864b66;
+  border-radius: 20px;
+  background: #3c3020;
+  cursor: pointer;
+}
+.audio-channel-toggle input::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 3px;
+  left: 3px;
+  border-radius: 50%;
+  background: #a38d69;
+}
+.audio-channel-toggle input:checked {
+  background: #aa8441;
+  border-color: #c9a45f;
+}
+.audio-channel-toggle input:checked::before {
+  left: 19px;
+  background: #f0debb;
+}
+.audio-volume {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #a99068;
+}
+.audio-volume output {
+  color: #d4bb8d;
+  font-variant-numeric: tabular-nums;
+}
+.audio-volume input[type='range'] {
+  grid-column: 1/-1;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  min-height: 28px;
+  background: transparent;
+}
+.audio-settings .text-button {
+  color: #c9a461;
+  margin-top: 12px;
+}
+.active-timer-settings,
+.language-settings {
+  border-top: 1px solid #b1925530;
+  margin-top: 24px;
+  padding-top: 20px;
+}
+.active-timer-settings p,
+.active-timer-settings small {
+  color: #bba581;
+  line-height: 1.5;
+}
+.match-menu-timer {
+  font-size: 12px;
+  color: #baa078;
+  margin: -10px 0 20px;
+}
+.match-status time.overdue {
+  color: #f29a73;
+}
+@media (max-width: 600px) {
+  .settings-trigger span {
+    display: none;
+  }
+  .settings-trigger {
+    padding: 8px;
+  }
+}

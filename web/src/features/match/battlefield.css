@@ -1,0 +1,1125 @@
+/* The board uses one 1920×1080 coordinate system. Every zone scales with the
+   original artwork; card fans overlap without shrinking the illustrations. */
+.match-app-header {
+  display: none;
+}
+.app-main.in-match {
+  padding: 0;
+  max-width: none;
+  min-height: 100dvh;
+  background: #080604;
+}
+.classic-match {
+  min-height: 100dvh;
+  background: #080604;
+  color: #d9bd83;
+}
+@font-face {
+  font-family: 'Gwent Sans';
+  src: url('../../ui/fonts/pt-sans-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gwent Sans';
+  src: url('../../ui/fonts/pt-sans-bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gwent Numbers';
+  src: url('../../ui/fonts/roboto-slab-medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+.classic-match {
+  --match-toolbar-height: 48px;
+  font-family: 'Gwent Sans', sans-serif;
+}
+.classic-match .match-heading {
+  height: var(--match-toolbar-height);
+  margin: 0;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid #ae874b40;
+  background: linear-gradient(#1d1710, #110e0a);
+  color: #c2ad88;
+  position: relative;
+  z-index: 30;
+}
+.match-brand,
+.match-controls,
+.match-status {
+  display: flex;
+  align-items: center;
+}
+.match-brand {
+  gap: 22px;
+  min-width: 0;
+}
+.match-wordmark {
+  font:
+    18px/1 Georgia,
+    serif;
+  letter-spacing: 0.18em;
+  color: #d9bb80;
+}
+.classic-match .connection {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font:
+    12px/1 'Gwent Sans',
+    sans-serif;
+  color: #ca967b;
+  white-space: nowrap;
+}
+.classic-match .connection.online {
+  color: #a4ad92;
+}
+.connection i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.match-status {
+  gap: 20px;
+  height: 100%;
+  justify-content: center;
+}
+.match-status .match-round {
+  font-size: 13px;
+  color: #a18e6e;
+  white-space: nowrap;
+}
+.match-round b {
+  font-weight: 400;
+  color: #e0caa0;
+  margin-left: 3px;
+}
+.match-status > strong {
+  font-size: 15px;
+  font-weight: 400;
+  color: #c1b296;
+  white-space: nowrap;
+}
+.match-status.your-turn > strong {
+  color: #f0d49c;
+}
+.match-status time {
+  font:
+    500 14px/1 'Gwent Numbers',
+    serif;
+  font-variant-numeric: tabular-nums;
+  color: #d9bc80;
+  min-width: 45px;
+  padding-left: 20px;
+  border-left: 1px solid #c4a36535;
+}
+.match-status time.urgent {
+  color: #ed9674;
+}
+.match-controls {
+  justify-content: flex-end;
+  gap: 8px;
+}
+.classic-match .toolbar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: #c9b38a;
+  font:
+    13px/1 'Gwent Sans',
+    sans-serif;
+}
+.toolbar-button svg,
+.match-menu-actions svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.classic-match .toolbar-button:hover {
+  background: #c9a26010;
+  border-color: #c9a26040;
+  color: #f1d39c;
+}
+.classic-match .match-menu {
+  width: min(92vw, 400px);
+}
+.match-menu-room {
+  margin: -4px 0 20px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.match-menu-invite {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  color: #a58e6b;
+  font-size: 12px;
+}
+.match-menu-invite input {
+  width: 100%;
+  min-width: 0;
+  font:
+    12px/1.4 'Gwent Sans',
+    sans-serif;
+  background: #100d09;
+  border: 1px solid #95733d66;
+  color: #d4c09b;
+}
+.match-menu-actions {
+  display: grid;
+  gap: 4px;
+}
+.match-menu-actions button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #d5c19c;
+  border-radius: 4px;
+  text-align: left;
+  font-size: 15px;
+}
+.match-menu-actions button:hover {
+  background: #bd945419;
+  border-color: #bd945444;
+}
+.match-menu-actions button small {
+  margin-left: auto;
+  color: #a18b69;
+  font-size: 11px;
+}
+.match-menu-actions button:last-child {
+  border-top-color: #bd94542b;
+  margin-top: 12px;
+  border-radius: 0;
+}
+.board-viewport {
+  width: 100%;
+  min-height: calc(100dvh - var(--match-toolbar-height));
+  display: grid;
+  place-items: center;
+  overflow-x: auto;
+  background: radial-gradient(ellipse, #29190c, #080604 70%);
+}
+.gc-board {
+  position: relative;
+  flex-shrink: 0;
+  width: min(100vw, calc((100dvh - var(--match-toolbar-height)) * 16 / 9));
+  aspect-ratio: 16/9;
+  container-type: size;
+  background: url('/img/board.jpg') center/100% 100% no-repeat;
+  --card-width: 4.65cqw;
+  font-family: 'Gwent Sans', sans-serif;
+}
+.classic-match .match-layout {
+  display: block;
+  position: absolute;
+  inset: 0;
+  gap: 0;
+}
+.classic-match .table {
+  position: absolute;
+  left: 26.5%;
+  top: 0;
+  width: 52.5%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  min-width: 0;
+}
+.classic-match .battle-row {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 12.15%;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  display: block;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  isolation: isolate;
+}
+.battle-row[data-side='opponent'][data-row='siege'] {
+  top: 1%;
+}
+.battle-row[data-side='opponent'][data-row='ranged'] {
+  top: 13.7%;
+}
+.battle-row[data-side='opponent'][data-row='close'] {
+  top: 26.5%;
+}
+.battle-row[data-side='self'][data-row='close'] {
+  top: 40.1%;
+}
+.battle-row[data-side='self'][data-row='ranged'] {
+  top: 53%;
+  --score-lift: -0.5cqw;
+}
+.battle-row[data-side='self'][data-row='siege'] {
+  top: 66%;
+  --score-lift: -0.65cqw;
+}
+.classic-match .battle-row.legal {
+  background: #ead16b18;
+  box-shadow:
+    inset 0 0 0 1px #e4bd5e77,
+    inset 0 0 35px #e4bd5e11;
+}
+.classic-match .row-destination {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 5.6%;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  opacity: 1;
+  z-index: 4;
+}
+.classic-match .row-destination strong {
+  font-size: 1.52cqw;
+  font-family: 'Gwent Numbers', serif;
+  font-weight: 500;
+  color: #100d08;
+  text-shadow: none;
+  line-height: 1;
+  transform: translateY(var(--score-lift, -0.3cqw));
+}
+.classic-match .row-destination strong[data-digits='3'] {
+  font-size: 1.18cqw;
+}
+.classic-match .row-destination strong[data-digits='4'] {
+  font-size: 0.9cqw;
+}
+.classic-match .row-special {
+  position: absolute;
+  left: 6.2%;
+  top: -4%;
+  width: 13.1%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  border: 0;
+  z-index: 3;
+}
+.classic-match .row-special .game-card {
+  width: var(--card-width);
+  height: 100%;
+}
+.classic-match .row-cards {
+  position: absolute;
+  left: 20%;
+  top: -4%;
+  width: 79.3%;
+  height: 100%;
+  min-height: 0;
+  padding: 0 0.3%;
+  margin: 0;
+  overflow: visible;
+  z-index: 3;
+}
+.classic-match .card-fan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  pointer-events: none;
+}
+.classic-match .fan-slot {
+  position: relative;
+  flex: 0 1 var(--card-width);
+  min-width: 0;
+  height: 100%;
+  pointer-events: none;
+}
+.classic-match .fan-slot:last-child {
+  flex-shrink: 0;
+}
+.classic-match .fan-slot .game-card {
+  position: relative;
+  width: var(--card-width);
+  height: 100%;
+  pointer-events: auto;
+}
+.classic-match .fan-slot:hover,
+.classic-match .fan-slot:focus-within {
+  z-index: 25;
+}
+.classic-match .row-play-area {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 0;
+  z-index: 30;
+}
+.classic-match .row-play-area:focus-visible {
+  outline: 2px solid #e8c571;
+  outline-offset: -3px;
+}
+.classic-match .row-play-area:hover {
+  background: #f8d8700c;
+}
+.classic-match .hand {
+  position: absolute;
+  left: 6.6%;
+  top: 77.6%;
+  width: 93%;
+  height: 12.2%;
+  margin: 0;
+  padding: 0;
+}
+.classic-match .hand-cards {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  padding: 0.4% 0.4%;
+  overflow: visible;
+}
+.classic-match .hand-cards .game-card {
+  width: var(--card-width);
+  height: 100%;
+}
+.classic-match .hand-cards .game-card:hover,
+.classic-match .hand-cards .game-card.selected {
+  translate: 0 -9%;
+  z-index: 30;
+}
+.classic-card.game-card {
+  padding: 0;
+  border: 1px solid #100c0580;
+  border-radius: 2px;
+  background: #20170e;
+  box-shadow: 1px 2px 5px #0009;
+  aspect-ratio: 0.697;
+  isolation: isolate;
+  container-type: inline-size;
+  overflow: visible;
+}
+.classic-card.game-card:hover {
+  box-shadow:
+    0 0 0 1px #e0b858,
+    0 0 12px #b8883399;
+  border-color: #e0b858;
+}
+.classic-card.game-card.selected {
+  box-shadow:
+    0 0 0 2px #f0c766,
+    0 0 16px #ecb342bb;
+  border-color: #f0c766;
+}
+.classic-card .card-art {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.classic-card .card-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.classic-card .card-strength {
+  display: block;
+  left: -4%;
+  top: -4%;
+  height: 50%;
+  width: 70%;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-size: contain;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  box-shadow: none;
+  color: #1a1208;
+  font:
+    500 24cqw/1 'Gwent Numbers',
+    serif;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.classic-card .card-strength b {
+  position: absolute;
+  left: 7%;
+  top: 7%;
+  width: 50%;
+  height: 50%;
+  display: grid;
+  place-items: center;
+  font-size: inherit;
+  line-height: 1;
+  font-weight: inherit;
+}
+.classic-card.hero .card-strength {
+  color: #fff;
+  text-shadow: 0 1px 2px #000;
+}
+.classic-row-icon,
+.classic-ability-icon {
+  position: absolute;
+  bottom: 2.5%;
+  width: 33%;
+  height: 22%;
+  background: center/contain no-repeat;
+  pointer-events: none;
+}
+.classic-row-icon {
+  right: 1.5%;
+}
+.classic-ability-icon {
+  right: 35%;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.classic-match .player-panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 26.5%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none !important;
+  pointer-events: none;
+}
+.player-summary {
+  position: absolute;
+  top: 24.25%;
+  left: 0;
+  width: 88.5%;
+  height: 12.5%;
+  background: #09080799;
+  color: #d7bd89;
+}
+.player-panel.is-self .player-summary {
+  top: 61.75%;
+}
+.classic-match .player-panel.active .player-summary {
+  background: linear-gradient(90deg, #e6ad141e, #1c130da8);
+  box-shadow:
+    0 -1px 2px #eac36155,
+    0 1px 2px #eac36155,
+    inset 0 0 20px #d8a42c12;
+}
+.player-portrait {
+  position: absolute;
+  left: 28.4%;
+  top: 10%;
+  width: 22%;
+  height: 80%;
+}
+.player-portrait > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.player-portrait > img.portrait-frame {
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  z-index: 2;
+}
+.player-portrait > img.faction-shield {
+  left: -15%;
+  top: -7%;
+  width: 48%;
+  height: 48%;
+  z-index: 3;
+}
+.player-panel.is-self .faction-shield {
+  top: 62%;
+}
+.classic-match .player-heading {
+  position: absolute;
+  left: 53%;
+  top: 9%;
+  width: 43%;
+  display: block;
+  padding: 0;
+}
+.classic-match .player-heading strong {
+  display: block;
+  font-size: 1.15cqw;
+  font-weight: 600;
+  max-width: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #dcb55e;
+}
+.classic-match .player-heading > span {
+  display: block;
+  font-size: 0.86cqw;
+  line-height: 1.3;
+  color: #baa47f;
+  margin-top: 2%;
+}
+.classic-match .player-panel.is-self .player-heading {
+  top: 57%;
+}
+.classic-match .total-score {
+  position: absolute;
+  left: 94.5%;
+  top: 26%;
+  height: 45%;
+  width: 12.6%;
+  display: grid;
+  place-items: center;
+  font:
+    500 1.7cqw/1 'Gwent Numbers',
+    serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  background: url('/img/icons/score_total_op.png') center/contain no-repeat;
+  color: #120f09;
+  line-height: 1;
+  margin: 0;
+  z-index: 4;
+}
+.classic-match .total-score[data-digits='3'] {
+  font-size: 1.35cqw;
+}
+.classic-match .total-score[data-digits='4'] {
+  font-size: 1cqw;
+}
+.classic-match .is-self .total-score {
+  background-image: url('/img/icons/score_total_me.png');
+}
+.classic-match .lives {
+  position: absolute;
+  left: 70.5%;
+  top: 57%;
+  height: 30%;
+  width: 19%;
+  gap: 0;
+  display: flex;
+}
+.classic-match .lives img {
+  width: 50%;
+  height: 100%;
+  object-fit: contain;
+}
+.classic-match .is-self .lives {
+  top: 14%;
+}
+.hand-count {
+  position: absolute;
+  left: 53%;
+  top: 57%;
+  height: 30%;
+  display: flex;
+  align-items: center;
+  gap: 4%;
+  width: 16%;
+  font:
+    500 1.15cqw/1 'Gwent Numbers',
+    serif;
+  color: #d1ad78;
+}
+.hand-count img {
+  height: 100%;
+  width: auto;
+}
+.is-self .hand-count {
+  top: 14%;
+}
+.classic-match .passed-label {
+  position: absolute;
+  left: 90%;
+  top: 86%;
+  right: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #d5c49a;
+  font-size: 1.2cqw;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.classic-match .is-self .passed-label {
+  top: -12%;
+}
+.classic-match .leader-mini {
+  position: absolute;
+  left: 27.5%;
+  top: 7.5%;
+  height: 12.5%;
+  width: 19.8%;
+  padding: 0;
+  border: 0;
+  border-radius: 1px;
+  background: transparent;
+  pointer-events: auto;
+  display: block;
+}
+.classic-match .is-self .leader-mini {
+  top: 77.5%;
+}
+.classic-match .leader-mini > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1px;
+}
+.classic-match .leader-mini.used > img {
+  filter: grayscale(0.8) brightness(0.55);
+}
+.classic-match .leader-mini:hover {
+  box-shadow: 0 0 14px #d6aa4c88;
+}
+.leader-crown {
+  position: absolute;
+  left: 119%;
+  top: 39%;
+  width: 38%;
+  aspect-ratio: 1;
+  opacity: 0.85;
+}
+.leader-crown img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.leader-mini.used .leader-crown {
+  opacity: 0.2;
+}
+.classic-match .card-piles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.classic-match .pile {
+  position: absolute;
+  top: 6.5%;
+  width: 5.85%;
+  height: 13.5%;
+  pointer-events: auto;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  padding: 0;
+  box-shadow: none;
+}
+.classic-match .grave-pile {
+  left: 80.45%;
+}
+.classic-match .deck-pile {
+  left: 89.85%;
+}
+.classic-match .card-piles.is-self .pile {
+  top: 76.5%;
+}
+.classic-match .pile .game-card,
+.classic-match .empty-pile {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+}
+.classic-match .pile .game-card {
+  box-shadow: 1px 2px 8px #0007;
+}
+.classic-match .deck-pile > img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.classic-match .deck-pile:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.classic-match .deck-pile > strong {
+  position: absolute;
+  bottom: 5%;
+  left: 10%;
+  right: 10%;
+  font:
+    500 1.45cqw/1.25 'Gwent Numbers',
+    serif;
+  line-height: 1;
+  background: #131116d9;
+  color: #d5c59a;
+}
+.pile-label {
+  position: absolute;
+  top: 103%;
+  left: 0;
+  right: 0;
+  font-size: 0.65cqw;
+  text-align: center;
+  color: #ad9770;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.classic-match .weather-well {
+  position: absolute;
+  left: 6.8%;
+  top: 41.3%;
+  width: 15.7%;
+  height: 12.5%;
+  display: flex;
+  gap: 2%;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+}
+.classic-match .weather-well .game-card {
+  height: 93%;
+  width: auto;
+  aspect-ratio: 0.697;
+}
+.weather-well > span {
+  font-size: 0.8cqw;
+  color: #ac875a65;
+  text-align: center;
+}
+.classic-match .pass-button {
+  position: absolute;
+  left: 16.45%;
+  top: 82.6%;
+  width: 7%;
+  height: 4.5%;
+  min-height: 25px;
+  border: 1px solid #a97e26;
+  background: #130e08d9;
+  color: #ddba60;
+  font-size: 1.15cqw;
+  padding: 0;
+  border-radius: 4px;
+  z-index: 8;
+}
+.classic-match .pass-button:disabled {
+  opacity: 0.35;
+}
+.classic-match .pass-button:hover:not(:disabled) {
+  border-color: #efcc73;
+  box-shadow: 0 0 12px #d1a03955;
+  background: #35240f;
+}
+.classic-match .round-counter {
+  position: absolute;
+  left: 3%;
+  top: 37.7%;
+  width: 20%;
+  display: flex;
+  justify-content: flex-end;
+  gap: 5%;
+  font-size: 0.65cqw;
+}
+.classic-match .round-counter > span {
+  background: none;
+  padding: 0;
+  color: #c3b18d;
+}
+.classic-match .round-counter .won {
+  color: #daba6c;
+}
+.classic-match .round-counter .lost {
+  color: #bd7a64;
+}
+.board-selection {
+  position: absolute;
+  left: 29.9%;
+  top: 92.3%;
+  width: 49%;
+  min-height: 4%;
+  display: flex;
+  align-items: center;
+  gap: 2%;
+  color: #c7ae7b;
+  font-size: 0.8cqw;
+  z-index: 20;
+}
+.board-selection > span {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.3;
+}
+.board-selection strong {
+  display: block;
+  font-size: 0.85cqw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.board-selection small {
+  display: block;
+  font-size: 0.65cqw;
+  color: #9f8c6a;
+  margin-top: 0.25cqw;
+}
+.board-selection button,
+.recon-button {
+  background: #1d140cd9;
+  color: #d8bc7b;
+  border: 1px solid #9b743655;
+  border-radius: 2px;
+  padding: 0.4cqw 0.6cqw;
+  font-size: 0.75cqw;
+  white-space: nowrap;
+  min-height: 24px;
+}
+.board-hint {
+  color: #967d58;
+  font-size: 0.7cqw;
+}
+.recon-button {
+  position: absolute;
+  left: 82%;
+  top: 48%;
+  font-size: 0.85cqw;
+}
+.game-history {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #bbaa88;
+  padding-left: 20px;
+}
+.game-history li {
+  padding: 7px 0;
+  border-bottom: 1px solid #ad8b4122;
+}
+.classic-match .error-banner,
+.classic-match .network-banner {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 90vw;
+  z-index: 45;
+  background: #20150ff5;
+}
+.classic-match .battle-row:after {
+  border-radius: 0;
+}
+.classic-match .weather-frost:after {
+  background: url('/img/icons/overlay_frost.png') center/cover no-repeat;
+  animation: none;
+}
+.classic-match .weather-rain:after {
+  background: url('/img/icons/overlay_rain.png') center/cover no-repeat;
+  animation: none;
+}
+.classic-match .weather-fog:after {
+  background: url('/img/icons/overlay_fog.png') center/cover no-repeat;
+  animation: none;
+}
+.classic-match .event-cue {
+  top: 8%;
+  font-size: 12px;
+}
+.classic-match .event-round_end,
+.classic-match .event-match_end {
+  top: 40%;
+  font-size: 28px;
+}
+.classic-match .event-art .classic-card {
+  width: 105px;
+  height: 150px;
+}
+
+.portrait-hint {
+  display: none;
+}
+@media (max-width: 1000px) {
+  .classic-match .match-heading {
+    padding: 0 14px;
+    gap: 12px;
+  }
+  .match-brand {
+    gap: 12px;
+  }
+  .match-status {
+    gap: 14px;
+  }
+  .match-wordmark {
+    font-size: 16px;
+  }
+  .classic-match .toolbar-button {
+    padding: 0 8px;
+  }
+  .history-control span {
+    display: none;
+  }
+  .classic-match .pass-button {
+    min-height: 29px;
+  }
+  .classic-match .player-heading strong {
+    font-size: 1.25cqw;
+  }
+  .classic-match .player-heading > span {
+    font-size: 1cqw;
+  }
+  .classic-match .board-selection button {
+    font-size: 10px;
+    min-height: 28px;
+  }
+  .classic-match .board-selection {
+    left: 28%;
+    width: 64%;
+    top: 92%;
+  }
+}
+@media (max-width: 600px) {
+  .classic-match .match-heading {
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 0 10px;
+  }
+  .match-brand,
+  .classic-match .history-control {
+    display: none;
+  }
+  .match-status {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .match-status > strong {
+    font-size: 13px;
+  }
+  .match-status .match-round {
+    font-size: 11px;
+  }
+  .match-status time {
+    font-size: 12px;
+    padding-left: 12px;
+    min-width: 42px;
+  }
+  .classic-match .toolbar-button {
+    padding: 0 5px;
+    min-height: 38px;
+  }
+  .classic-match .toolbar-button span {
+    display: none;
+  }
+  .board-viewport {
+    display: block;
+    min-height: 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .gc-board {
+    width: 760px;
+    min-width: 760px;
+  }
+  .classic-match .portrait-hint {
+    display: block;
+    color: #a18a64;
+    margin: 12px 16px;
+    font-size: 11px;
+  }
+  .classic-match .board-selection {
+    width: 68%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .classic-match .hand-cards .game-card:hover,
+  .classic-match .hand-cards .game-card.selected {
+    translate: none;
+  }
+}
+
+.classic-match .dialog {
+  background: #1e1711;
+  border-color: #9a793f;
+  color: #e4cf9d;
+  box-shadow: 0 24px 100px #000c;
+}
+.classic-match .dialog::backdrop {
+  background: #080503db;
+}
+.classic-match .dialog > header h2 {
+  color: #e5c889;
+}
+.classic-match .dialog p {
+  color: #bfad8b;
+}
+.classic-match .dialog .button.primary {
+  background: #b08c43;
+  border-color: #d4b16a;
+  color: #1e150b;
+}
+.classic-match .dialog .button.quiet {
+  background: #35281a;
+  border-color: #8d6c3a66;
+  color: #d6bd87;
+}
+.classic-match .dialog .card-caption {
+  background: #32291c;
+  color: #dfcfb1;
+}
+.classic-match .event-cue > span {
+  background: #1c130bf2;
+  border-color: #b79755aa;
+  color: #ecd2a0;
+}
+.classic-match .waiting-screen {
+  padding: 40px 20px;
+  margin: 0 auto;
+}
+.classic-match .waiting-screen h1 {
+  color: #e4c889;
+}
+@media (max-width: 850px) and (orientation: portrait) {
+  .board-viewport {
+    min-height: 0;
+    display: block;
+  }
+  .gc-board {
+    margin: 0 auto;
+  }
+  .classic-match .portrait-hint {
+    display: block;
+    margin: 16px 20px;
+    font-size: 12px;
+    color: #ac9167;
+  }
+}

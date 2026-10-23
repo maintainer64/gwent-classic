@@ -1,0 +1,528 @@
+/* Full cards float over the real table, with the same dark strips as the
+   original game. The native dialog retains keyboard focus and Escape. */
+.classic-match .dialog.hand-preview {
+  --preview-height: min(61dvh, 650px);
+  --preview-width: calc(var(--preview-height) * 0.53);
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+  color: #dbc392;
+  font-family: 'Gwent Sans', sans-serif;
+}
+.classic-match .hand-preview::backdrop {
+  background: #09060340;
+  backdrop-filter: none;
+}
+.classic-match .hand-preview > header {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  z-index: 5;
+  margin: 0;
+}
+.hand-preview > header h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.classic-match .hand-preview .icon-button {
+  background: #110d08b3;
+  border: 0;
+  color: #ddbc74;
+  font-size: 28px;
+}
+.hand-instruction {
+  position: absolute;
+  top: 7dvh;
+  left: 0;
+  right: 0;
+  min-height: 7dvh;
+  display: grid;
+  place-items: center;
+  padding: 8px 54px;
+  background: #080706eb;
+  box-shadow:
+    0 -1px 12px #d3b27025,
+    0 1px 12px #d3b27025;
+  text-align: center;
+  color: #d9ac35;
+  font-size: clamp(16px, 2.2vw, 30px);
+}
+.hand-preview-layout {
+  display: contents;
+}
+.card-gallery-empty {
+  position: absolute;
+  inset: 20% 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+.card-gallery-empty img {
+  width: 56px;
+  height: 64px;
+  object-fit: contain;
+  opacity: 0.65;
+}
+.classic-match .card-gallery-empty p {
+  margin: 0;
+  color: #c9b58b;
+  font:
+    400 clamp(20px, 2vw, 28px)/1.3 'Gwent Sans',
+    sans-serif;
+}
+.hand-gallery {
+  position: absolute;
+  top: 15dvh;
+  width: 100%;
+}
+.hand-gallery-rail {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--preview-width) * 0.13);
+  height: calc(var(--preview-height) + 28px);
+  padding: 14px 50%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.hand-gallery-rail::-webkit-scrollbar {
+  display: none;
+}
+.hand-gallery-slot {
+  flex: 0 0 var(--preview-width);
+  width: var(--preview-width);
+  transform: scale(0.78);
+  transform-origin: top center;
+  transition: transform 0.2s ease;
+}
+.hand-gallery-slot:has(+ .active),
+.hand-gallery-slot.active + .hand-gallery-slot {
+  transform: scale(0.9);
+}
+.hand-gallery-slot.active {
+  transform: scale(1);
+  z-index: 1;
+}
+.hand-gallery-card {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 14px;
+  color: inherit;
+  text-align: left;
+}
+.hand-gallery-card:focus-visible {
+  outline: 2px solid #f8dc8b;
+  outline-offset: 6px;
+}
+.focused-card .full-card {
+  max-width: none;
+  height: var(--preview-height);
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #97804d;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px #0006;
+}
+.hand-gallery-card[aria-pressed='true'] .full-card {
+  border-color: #e4b939;
+  box-shadow:
+    0 0 0 2px #e4b939,
+    0 0 30px #deb03177;
+}
+.focused-card .full-card .full-card-art {
+  height: 76%;
+  flex: 0 0 76%;
+  aspect-ratio: auto;
+}
+.focused-card .full-card .card-art {
+  height: 100%;
+}
+.focused-card .full-card .card-faction-ribbon {
+  left: 10%;
+  top: 8%;
+  width: 8%;
+  height: 90%;
+}
+.focused-card .full-card .card-strength {
+  font-family: 'Gwent Sans', sans-serif;
+  font-weight: 400;
+}
+.focused-card .full-card .classic-row-icon,
+.focused-card .full-card .classic-ability-icon {
+  left: 0;
+  right: auto;
+  bottom: auto;
+  width: 30%;
+  height: 21%;
+}
+.focused-card .full-card .classic-row-icon {
+  top: 27%;
+}
+.focused-card .full-card .classic-ability-icon {
+  top: 49%;
+}
+.focused-card .full-card-copy {
+  flex: 1;
+  padding: 4cqw 5cqw;
+  overflow: hidden;
+  text-align: center;
+}
+.focused-card .full-card-type,
+.focused-card .full-card-ability {
+  display: none;
+}
+.focused-card .full-card h3 {
+  font:
+    700 6cqw/1.12 'Gwent Sans',
+    sans-serif;
+  margin: 0 0 3cqw;
+}
+.focused-card .full-card-copy p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font:
+    400 4.5cqw/1.2 'Gwent Sans',
+    sans-serif;
+}
+.hand-navigation {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.hand-navigation[hidden] {
+  display: none;
+}
+.hand-navigation > span {
+  display: none;
+}
+.hand-navigation button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 54px;
+  border: 0;
+  border-radius: 4px;
+  background: #100c0899;
+  color: #e2bd61;
+  pointer-events: auto;
+}
+.hand-navigation svg {
+  width: 26px;
+  height: 26px;
+}
+.hand-card-description {
+  position: absolute;
+  top: calc(15dvh + var(--preview-height) + 33px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(680px, 90vw);
+  min-height: 10dvh;
+  padding: 12px 22px 12px 70px;
+  border-block: 1px solid #b7a27b77;
+  background: #0b0a09ed;
+  text-align: center;
+}
+.hand-ability-icon {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  left: 15px;
+  top: 12px;
+}
+.hand-card-description h3 {
+  font:
+    700 clamp(15px, 1.4vw, 22px)/1.2 'Gwent Sans',
+    sans-serif;
+  color: #d3b98b;
+  margin: 0 0 8px;
+}
+.classic-match .hand-card-description p {
+  margin: 0;
+  color: #dac49b;
+  font-size: clamp(13px, 1.2vw, 18px);
+  line-height: 1.35;
+}
+.hand-preview-footer {
+  position: absolute;
+  bottom: 12px;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+}
+.hand-preview-tools,
+.hand-play-action {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.hand-play-action > span {
+  max-width: 290px;
+  text-align: right;
+  color: #d5bd8d;
+  text-shadow: 0 1px 4px #000;
+}
+.classic-match .hand-play-action .button {
+  min-height: 38px;
+  padding: 8px 16px;
+  font:
+    700 14px/1.1 'Gwent Sans',
+    sans-serif;
+  border-radius: 3px;
+}
+.selected-card-preview {
+  --preview-height: min(calc((100dvh - 48px) * 0.65), 36.5vw);
+  position: fixed;
+  top: calc(48px + min(9vw, 13dvh));
+  right: max(12px, calc((100vw - (100dvh - 48px) * 16 / 9) / 2 + 12px));
+  width: calc(var(--preview-height) * 0.53);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 35;
+  pointer-events: none;
+}
+.selected-card-preview .focused-card {
+  width: 100%;
+}
+.selected-card-preview .full-card {
+  border-color: #e4b939;
+  box-shadow:
+    0 0 0 1px #e4b939,
+    0 0 22px #deb03144;
+}
+.selected-card-effect {
+  position: relative;
+  flex-shrink: 0;
+  width: clamp(200px, 32vw, 440px);
+  max-height: 24dvh;
+  overflow-y: auto;
+  padding: 12px 16px 12px 58px;
+  border-block: 1px solid #b7a27b77;
+  background: #0b0a09ed;
+  text-align: center;
+  pointer-events: auto;
+}
+.selected-card-effect .hand-ability-icon {
+  width: 32px;
+  height: 32px;
+  left: 12px;
+}
+.selected-card-effect h3 {
+  margin: 0 0 6px;
+  color: #d3b98b;
+  font:
+    700 clamp(13px, 1.2vw, 18px)/1.2 'Gwent Sans',
+    sans-serif;
+}
+.classic-match .selected-card-effect p {
+  margin: 0;
+  color: #dac49b;
+  font-size: clamp(12px, 1vw, 16px);
+  line-height: 1.35;
+}
+.classic-match .selected-card-hint {
+  margin: 0;
+  padding: 8px 12px;
+  background: #0b0a09ed;
+  color: #dec799;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.classic-match .selected-card-preview > button {
+  pointer-events: auto;
+  min-height: 36px;
+  padding: 8px 16px;
+  font:
+    700 14px/1.2 'Gwent Sans',
+    sans-serif;
+}
+.match-announcements {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+.match-announcement {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 42%;
+  height: clamp(90px, 15dvh, 180px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #080706ed;
+  box-shadow:
+    0 -1px 12px #bba57b30,
+    0 1px 12px #bba57b30;
+  color: #ddb035;
+  animation: announcement-in 0.2s ease-out;
+}
+.match-announcement img {
+  width: clamp(150px, 24vw, 360px);
+  height: 155%;
+  object-fit: contain;
+  margin: 0 -20px 0 -70px;
+}
+.match-announcement strong {
+  font:
+    700 clamp(20px, 2.8vw, 38px)/1.2 'Gwent Sans',
+    sans-serif;
+  max-width: 60vw;
+}
+@keyframes announcement-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+  to {
+    opacity: 1;
+    translate: 0;
+  }
+}
+@media (max-width: 720px) {
+  .hand-play-action > span,
+  .hand-preview-tools > span {
+    display: none;
+  }
+  .hand-preview-footer {
+    left: 10px;
+    right: 10px;
+    gap: 8px;
+    bottom: 10px;
+  }
+  .hand-play-action {
+    gap: 6px;
+  }
+  .classic-match .hand-play-action .button {
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+  .hand-card-description {
+    padding: 10px 14px 10px 54px;
+  }
+  .hand-ability-icon {
+    width: 32px;
+    height: 32px;
+    left: 10px;
+  }
+  .match-announcement img {
+    margin-left: -30px;
+    margin-right: -15px;
+  }
+}
+@media (orientation: portrait) {
+  .selected-card-preview {
+    --preview-height: min(42dvh, 68vw);
+    top: 15dvh;
+    right: 10px;
+  }
+  .classic-match .dialog.hand-preview {
+    --preview-height: min(54dvh, 650px);
+    --preview-width: min(calc(var(--preview-height) * 0.53), 64vw);
+  }
+  .hand-gallery {
+    top: 20dvh;
+  }
+  .hand-card-description {
+    top: calc(20dvh + var(--preview-height) + 33px);
+  }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  .selected-card-preview {
+    --preview-height: 46dvh;
+    top: 18dvh;
+    right: 12px;
+  }
+  .selected-card-effect {
+    padding-block: 6px;
+    max-height: 25dvh;
+  }
+  .selected-card-effect .hand-ability-icon {
+    top: 6px;
+  }
+  .classic-match .dialog.hand-preview {
+    --preview-height: 54dvh;
+  }
+  .hand-instruction {
+    top: 2dvh;
+    min-height: 9dvh;
+    font-size: 16px;
+    padding-block: 4px;
+  }
+  .hand-gallery {
+    top: 10dvh;
+  }
+  .hand-gallery-rail {
+    padding-block: 8px;
+    height: calc(var(--preview-height) + 16px);
+  }
+  .hand-card-description {
+    top: calc(10dvh + var(--preview-height) + 18px);
+    padding-block: 6px;
+    min-height: 0;
+  }
+  .hand-card-description h3 {
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
+  .classic-match .hand-card-description p {
+    font-size: 12px;
+  }
+  .hand-ability-icon {
+    width: 30px;
+    height: 30px;
+    top: 7px;
+  }
+  .hand-preview-footer {
+    bottom: 5px;
+  }
+  .hand-play-action > span {
+    display: none;
+  }
+  .classic-match .hand-play-action .button {
+    min-height: 32px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hand-gallery-slot {
+    transition: none;
+  }
+  .match-announcement {
+    animation: none;
+  }
+}

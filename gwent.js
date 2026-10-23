@@ -2929,9 +2929,9 @@ class DeckMaker {
 		}
 	}
 
-	loadDeck(deck, siilent = true)
+	loadDeck(deck, silent = true)
 	{
-		if (!deck)
+		if (!deck || !Number.isInteger(deck.leader) || !card_dict[deck.leader] || !Array.isArray(deck.cards))
 			return null;
 		let warning = "";
 		// verify that leader card is actually a leader and that it's faction matches the deck faction
@@ -2951,7 +2951,7 @@ class DeckMaker {
 				return false;
 			}
 			if (card.count < c[1]) {
-				warning += "Deck contains " + c[1] + "/" + card.count + " available " + card_dict[c.index].name + " cards\n";
+				warning += "Deck contains " + c[1] + "/" + card.count + " available " + card.name + " cards\n";
 				c[1] = card.count;
 				return true;
 			}
@@ -2966,7 +2966,7 @@ class DeckMaker {
 				return null;
 			}
 			AudioManager.playSFX('warning');
-			if (confirm(warning + "\n\n\Continue importing deck?"))
+			if (!confirm(warning + "\n\nContinue importing deck?"))
 			{
 				return null;
 			}
@@ -3171,6 +3171,7 @@ class SavedObject
 		{
 			newObj = {};
 		}
+		this.obj = newObj;
 		localStorage?.setItem(this.key, JSON.stringify(newObj));
 		if (this.action)
 			this.action(this.obj);
@@ -3447,7 +3448,7 @@ function iconURL(name, ext = "png"){
 	return imgURL("icons/" + name, ext);
 }
 function largeURL(name, ext="jpg"){
-	return imgURL("lg/" + name, ext) 
+	return name.startsWith("faction_") ? imgURL("icons/deck_shield_" + name.slice(8), "png") : smallURL(name, ext)
 }
 function smallURL(name, ext="jpg"){
 	return imgURL("sm/" + name, ext);

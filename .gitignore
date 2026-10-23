@@ -1,0 +1,10 @@
+/data/
+/web/node_modules/
+/web/dist/
+*.log
+/.playwright-mcp/
+
+/web/public/
+/web/test-results/
+/web/playwright-report/
+/.idea/
