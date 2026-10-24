@@ -1,0 +1,10 @@
+Weather particle sprites: Kenney Particle Pack by Kenney (2018).
+Source: https://kenney.nl/assets/particle-pack
+License: Creative Commons Zero (CC0 1.0 Universal).
+https://creativecommons.org/publicdomain/zero/1.0/
+
+rain-drop.png: PNG (Transparent)/trace_01.png
+snow-flake.png: PNG (Transparent)/circle_05.png
+fog-wisp.png: PNG (Transparent)/smoke_01.png
+Original PNG files are unchanged; size, transparency and motion are applied in CSS.
+See Kenney-License.txt for the original license notice.

@@ -7,10 +7,16 @@ export function MatchResult({
   room,
   onHome,
   onRematch,
+  busy = false,
+  live = true,
+  error = '',
 }: {
   room: Room
   onHome: () => void
   onRematch: () => void
+  busy?: boolean
+  live?: boolean
+  error?: string
 }) {
   const result = room.winner < 0 ? 'draw' : room.winner === room.seat ? 'win' : 'lose'
   const title =
@@ -94,10 +100,23 @@ export function MatchResult({
           <button className="button quiet" onClick={onHome}>
             В главное меню
           </button>
-          <button className="button primary" onClick={onRematch}>
-            Новая партия
+          <button
+            className="button primary"
+            disabled={busy || !live || !!room.rematchReady?.[room.seat]}
+            onClick={onRematch}
+          >
+            {room.rematchReady?.[room.seat]
+              ? 'Ждём соперника…'
+              : room.rematchReady?.[1 - room.seat]
+                ? 'Принять реванш'
+                : 'Реванш'}
           </button>
         </div>
+        {error && (
+          <p className="result-error" role="alert">
+            {error}
+          </p>
+        )}
       </div>
     </Dialog>
   )

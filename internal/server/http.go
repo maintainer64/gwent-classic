@@ -26,7 +26,7 @@ const cookieName = "gwent_player"
 const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
 var tokenRE = regexp.MustCompile(`^[0-9a-f]{64}$`)
-var apiRoute = regexp.MustCompile(`^/api/rooms/([A-Z2-9]{12})(?:/(join|actions|ws))?$`)
+var apiRoute = regexp.MustCompile(`^/api/rooms/([A-Z2-9]{12})(?:/(join|prepare|actions|ws))?$`)
 
 type limit struct {
 	hits    int
@@ -204,6 +204,7 @@ func (a *API) Handler() http.Handler {
 					Deck    []game.DeckEntry `json:"deck,omitempty"`
 					Bot     *game.BotOptions `json:"bot,omitempty"`
 					Timer   *game.TurnTimer  `json:"timer,omitempty"`
+					Lobby   bool             `json:"lobby,omitempty"`
 				}
 				if !jsonBody(w, r, &in) {
 					return
@@ -214,6 +215,10 @@ func (a *API) Handler() http.Handler {
 				}
 				if in.Mode != "bot" && in.Bot != nil {
 					fail(w, 400, "bot settings are only available in bot mode")
+					return
+				}
+				if in.Lobby && in.Mode != "pvp" {
+					fail(w, 400, "invalid mode for lobby")
 					return
 				}
 				timer, err := game.NormalizeTimer(in.Timer)
@@ -232,6 +237,7 @@ func (a *API) Handler() http.Handler {
 						return
 					}
 					room.Timer = &timer
+					room.Lobby = in.Lobby
 					if err := a.Store.Create(room); err == nil {
 						a.Hub.Broadcast(room.Code, room)
 						respond(w, 201, room.Project(0, a.Catalog))
@@ -308,17 +314,50 @@ func (a *API) Handler() http.Handler {
 					fail(w, 400, "Name must be 1-24 characters")
 					return
 				}
-				room, err := a.Store.Change(code, in.ExpectedVersion, func(room *game.Room) error {
+				join := func(room *game.Room) error {
 					if room.IndexFor(user) >= 0 {
 						return errors.New("already joined")
 					}
 					return room.JoinWithDeck(user, strings.TrimSpace(in.Name), in.Faction, a.Catalog, in.Deck, in.Leader)
-				})
+				}
+				room, err := a.Store.Change(code, in.ExpectedVersion, join)
+				// The host may have finalized setup after the guest opened the
+				// invitation. Seat capacity is still checked under the store lock.
+				if err != nil && err.Error() == "stale room version" {
+					if latest, loadErr := a.Store.Load(code); loadErr == nil {
+						room, err = a.Store.Change(code, latest.Version, join)
+					}
+				}
 				if err != nil {
 					storeError(w, err)
 					return
 				}
 				respond(w, 200, room.Project(1, a.Catalog))
+				a.Hub.Broadcast(code, room)
+			case "prepare":
+				var in struct {
+					Name            string           `json:"name"`
+					Faction         string           `json:"faction"`
+					Leader          int              `json:"leader"`
+					Deck            []game.DeckEntry `json:"deck,omitempty"`
+					Timer           *game.TurnTimer  `json:"timer,omitempty"`
+					ExpectedVersion int              `json:"expectedVersion"`
+				}
+				if !jsonBody(w, r, &in) {
+					return
+				}
+				if !validateName(in.Name) {
+					fail(w, 400, "Name must be 1-24 characters")
+					return
+				}
+				room, err := a.Store.Change(code, in.ExpectedVersion, func(room *game.Room) error {
+					return room.PrepareLobby(room.IndexFor(user), strings.TrimSpace(in.Name), in.Faction, in.Leader, in.Deck, in.Timer, a.Catalog)
+				})
+				if err != nil {
+					storeError(w, err)
+					return
+				}
+				respond(w, 200, room.Project(0, a.Catalog))
 				a.Hub.Broadcast(code, room)
 			case "actions":
 				var in struct {

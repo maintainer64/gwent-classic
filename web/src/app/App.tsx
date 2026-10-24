@@ -63,6 +63,8 @@ const readSetup = (): SetupState => {
   }
 }
 const routeCode = () => /^\/room\/([A-Z2-9]{12})\/?$/.exec(location.pathname)?.[1] ?? null
+const isDraftLobby = (room: Room | null) =>
+  !!(room?.lobby && room.status === 'waiting' && room.seat === 0 && !room.lobbyReady?.[0])
 export function App() {
   const [catalog, setCatalog] = useState<Catalog | null>(null),
     [decks, setDecks] = useState<SavedDeck[]>([]),
@@ -84,7 +86,11 @@ export function App() {
   const enter = (room: Room) => {
     if (location.pathname !== `/room/${room.code}`) history.pushState({}, '', `/room/${room.code}`)
     match.enter(room)
-    setScreen('match')
+    if (isDraftLobby(room)) {
+      setJoinCode(null)
+      setSettings((old) => ({ ...old, mode: 'pvp' }))
+      setScreen('setup')
+    } else setScreen('match')
     setError('')
   }
   const restore = async () => {
@@ -180,9 +186,31 @@ export function App() {
   const edit = (target: 'player' | 'bot' | 'library') => {
     setPurpose(target)
     setEditor(target === 'bot' ? settings.botDeck : settings.playerDeck)
-    match.leave()
+    if (!isDraftLobby(match.room)) match.leave()
     setScreen('decks')
     setError('')
+  }
+  const createInvitation = async () => {
+    if (!catalog || busy) return
+    setBusy(true)
+    setError('')
+    try {
+      const deck = decks.find((d) => d.id === settings.playerDeck) ?? decks[0]
+      enter(
+        await api.create({
+          name: settings.name.trim() || 'Игрок',
+          mode: 'pvp',
+          faction: deck?.faction ?? 'realms',
+          leader: 0,
+          lobby: true,
+          timer: parseTimer(settings) ?? { minutes: 1, mode: 'hard' },
+        }),
+      )
+    } catch (err) {
+      setError(err instanceof Error ? err.message : ERROR_TEXT.network)
+    } finally {
+      setBusy(false)
+    }
   }
   const start = async () => {
     if (!catalog || busy) return
@@ -206,6 +234,29 @@ export function App() {
       const timer = parseTimer(settings)
       if (!timer) {
         setError(ERROR_TEXT.invalid_timer)
+        return
+      }
+      if (isDraftLobby(match.room)) {
+        const lobby = match.room!
+        const config = {
+          name,
+          faction: deck.faction,
+          ...payload,
+          timer,
+          expectedVersion: lobby.version,
+        }
+        let prepared: Room
+        try {
+          prepared = await api.prepare(lobby.code, config)
+        } catch (err) {
+          if (!(err instanceof ApiError) || err.status !== 409) throw err
+          const fresh = await api.getRoom(lobby.code)
+          prepared =
+            fresh.status !== 'waiting' || fresh.lobbyReady?.[0]
+              ? fresh
+              : await api.prepare(lobby.code, { ...config, expectedVersion: fresh.version })
+        }
+        enter(prepared)
         return
       }
       let bot: BotSettings | undefined
@@ -434,6 +485,10 @@ export function App() {
                 }}
                 onEdit={edit}
                 onBack={home}
+                inviteRoom={isDraftLobby(match.room) ? match.room : null}
+                onInvite={() => {
+                  void createInvitation()
+                }}
               />
             )}
             {screen === 'decks' && (
@@ -475,8 +530,7 @@ export function App() {
                 onHome={home}
                 onSettings={() => setPreferencesOpen(true)}
                 onRematch={() => {
-                  home()
-                  setScreen('setup')
+                  void match.send({ type: 'rematch' })
                 }}
               />
             )}

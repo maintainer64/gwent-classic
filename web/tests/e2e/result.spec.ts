@@ -62,6 +62,12 @@ for (const result of ['win', 'lose', 'draw'] as const) {
     page.on('pageerror', (e) => faults.push(e.message))
     await page.route(`**/api/rooms/${room.code}`, (route) => route.fulfill({ json: room }))
     await page.routeWebSocket(`**/api/rooms/${room.code}/ws`, (ws) => ws.send(JSON.stringify(room)))
+    await page.route(`**/api/rooms/${room.code}/actions`, async (route) => {
+      expect(route.request().postDataJSON().action).toEqual({ type: 'rematch' })
+      await route.fulfill({
+        json: { ...room, version: room.version + 1, rematchReady: [false, true] },
+      })
+    })
     await page.goto(`/room/${room.code}`)
     const screen = page.locator('.match-result')
     await expect(screen).toBeVisible()
@@ -88,9 +94,9 @@ for (const result of ['win', 'lose', 'draw'] as const) {
       await page.setViewportSize(size)
       await expect(screen.locator('.result-emblem')).toBeInViewport({ ratio: 0.99 })
       await expect(screen.locator('.results-table')).toBeInViewport({ ratio: 0.99 })
-      await expect(
-        screen.getByRole('button', { name: 'Новая партия', exact: true }),
-      ).toBeInViewport({ ratio: 0.99 })
+      await expect(screen.getByRole('button', { name: 'Реванш', exact: true })).toBeInViewport({
+        ratio: 0.99,
+      })
       await expect(
         screen.getByRole('button', { name: 'В главное меню', exact: true }),
       ).toBeInViewport({ ratio: 0.99 })
@@ -104,10 +110,11 @@ for (const result of ['win', 'lose', 'draw'] as const) {
       )
     expect(broken).toEqual([])
     if (result === 'win') {
-      await screen.getByRole('button', { name: 'Новая партия', exact: true }).click()
+      await screen.getByRole('button', { name: 'Реванш', exact: true }).click()
       await expect(
-        page.getByRole('spinbutton', { name: 'Минут на ход', exact: true }),
-      ).toBeVisible()
+        screen.getByRole('button', { name: 'Ждём соперника…', exact: true }),
+      ).toBeDisabled()
+      await expect(page).toHaveURL(`/room/${room.code}`)
     } else {
       await screen.getByRole('button', { name: 'В главное меню', exact: true }).click()
       await expect(page.getByRole('button', { name: /^Сыграть с ботом/ })).toBeVisible()

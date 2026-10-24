@@ -3,10 +3,11 @@ package game
 // Frames contain only public zones and counters. Private hands, deck choices
 // and shuffled order can never leak through animation history.
 type BoardFrame struct {
-	Players []PlayerView `json:"players"`
-	Weather []string     `json:"weather"`
-	Round   int          `json:"round"`
-	Status  string       `json:"status"`
+	Players      []PlayerView `json:"players"`
+	Weather      []string     `json:"weather"`
+	Round        int          `json:"round"`
+	Status       string       `json:"status"`
+	WeatherCards []CardView   `json:"weatherCards,omitempty"`
 }
 type MatchEvent struct {
 	ID         int        `json:"id"`
@@ -32,7 +33,7 @@ func (r *Room) emit(kind string, actor int, card *Card, row string, private bool
 		e.PrivateFor = actor + 1
 	}
 	view := r.projectState(-1, c)
-	e.Frame = BoardFrame{Players: view.Players, Weather: view.Weather, Round: r.Round, Status: r.Status}
+	e.Frame = BoardFrame{Players: view.Players, Weather: view.Weather, WeatherCards: view.WeatherCards, Round: r.Round, Status: r.Status}
 	r.Transitions = append(r.Transitions, e)
 	if len(r.Transitions) > 64 {
 		r.Transitions = append([]MatchEvent(nil), r.Transitions[len(r.Transitions)-64:]...)

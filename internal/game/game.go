@@ -85,7 +85,7 @@ func (c Catalog) Valid() error {
 // All original leader cards are selectable; their effects are resolved on Go.
 // Passive powers are enabled when the game starts.
 var supportedLeaders = map[string]string{
-	"foltest_king":            "Сыграть туман из своей колоды",
+	"foltest_king":            "Сыграть мглу из своей колоды",
 	"foltest_lord":            "Очистить погоду",
 	"foltest_siegemaster":     "Удвоить осадный ряд",
 	"foltest_steelforged":     "Казнь осадного ряда противника",
@@ -325,23 +325,24 @@ func (o BotOptions) makePlayer(c Catalog) (Player, error) {
 }
 
 type Player struct {
-	ID         string            `json:"id"`
-	Name       string            `json:"name"`
-	Faction    string            `json:"faction"`
-	Leader     int               `json:"leader"`
-	Deck       []Card            `json:"deck"`
-	Hand       []Card            `json:"hand"`
-	Grave      []Card            `json:"grave"`
-	Rows       map[string][]Card `json:"rows"`
-	Horn       map[string]bool   `json:"horn"`
-	Mardroeme  map[string]bool   `json:"mardroeme"`
-	Special    map[string][]Card `json:"special"`
-	Peek       []Card            `json:"peek,omitempty"`
-	Passed     bool              `json:"passed"`
-	Wins       int               `json:"wins"`
-	LeaderUsed bool              `json:"leaderUsed"`
-	Ready      bool              `json:"ready"`
-	Redraws    int               `json:"redraws"`
+	ID           string            `json:"id"`
+	Name         string            `json:"name"`
+	Faction      string            `json:"faction"`
+	Leader       int               `json:"leader"`
+	Deck         []Card            `json:"deck"`
+	Hand         []Card            `json:"hand"`
+	Grave        []Card            `json:"grave"`
+	Rows         map[string][]Card `json:"rows"`
+	Horn         map[string]bool   `json:"horn"`
+	Mardroeme    map[string]bool   `json:"mardroeme"`
+	Special      map[string][]Card `json:"special"`
+	Peek         []Card            `json:"peek,omitempty"`
+	Passed       bool              `json:"passed"`
+	Wins         int               `json:"wins"`
+	LeaderUsed   bool              `json:"leaderUsed"`
+	Ready        bool              `json:"ready"`
+	Redraws      int               `json:"redraws"`
+	StartingDeck []Card            `json:"startingDeck,omitempty"`
 }
 
 // An immutable per-round score record, used by the original victory screen.
@@ -374,6 +375,10 @@ type Room struct {
 	Events        []string           `json:"events"`
 	Serial        int                `json:"serial"`
 	EventSeq      int                `json:"eventSeq"`
+	GameNumber    int                `json:"gameNumber"`
+	RematchReady  [2]bool            `json:"rematchReady"`
+	Lobby         bool               `json:"lobby,omitempty"`
+	LobbyReady    [2]bool            `json:"lobbyReady"`
 	Transitions   []MatchEvent       `json:"transitions,omitempty"`
 	simulating    bool
 	clearingRound bool
@@ -547,10 +552,27 @@ func (r *Room) JoinWithDeck(id, name, faction string, c Catalog, deck []DeckEntr
 		return err
 	}
 	r.Players = append(r.Players, p)
+	if r.Lobby {
+		r.LobbyReady[1] = true
+		if !r.LobbyReady[0] {
+			return nil
+		}
+	}
 	r.start(c)
 	return nil
 }
 func (r *Room) start(c Catalog) {
+	if r.Lobby {
+		r.LobbyReady = [2]bool{true, true}
+	}
+	if r.GameNumber == 0 {
+		r.GameNumber = 1
+	}
+	for i := range r.Players {
+		if len(r.Players[i].StartingDeck) == 0 {
+			r.Players[i].StartingDeck = append([]Card(nil), r.Players[i].Deck...)
+		}
+	}
 	r.Status = "playing"
 	r.Phase = "mulligan"
 	r.Round = 1
@@ -1081,6 +1103,8 @@ func (r *Room) activateLeader(index int, a Action, c Catalog) error {
 		r.optimalAgile(index, c)
 	case "foltest_lord":
 		r.clearWeather()
+		clearing := Card{UID: fmt.Sprintf("leader-%d", index), Def: p.Leader - 1}
+		r.emit("weather", index, &clearing, "", false, c)
 	case "foltest_siegemaster":
 		// Legacy Row.leaderHorn is a no-op if ANY special card occupies the slot.
 		if len(p.Special["siege"]) == 0 {
@@ -1298,6 +1322,9 @@ func (r *Room) Tick(now time.Time, c Catalog) bool {
 }
 
 func (r *Room) Apply(index int, a Action, c Catalog) error {
+	if a.Type == "rematch" {
+		return r.requestRematch(index, c)
+	}
 	if r.Status != "playing" {
 		return errors.New("match is not active")
 	}
@@ -1688,6 +1715,7 @@ func (r *Room) ApplyBot(a Action, c Catalog) error {
 
 // Per-viewer projection never transmits an opponent's hand, draw order or identity token.
 type CardView struct {
+	BasePower     int    `json:"basePower"`
 	Faction       string `json:"faction"`
 	UID           string `json:"uid"`
 	Def           int    `json:"def"`
@@ -1727,6 +1755,10 @@ type PlayerView struct {
 	Redraws           int                   `json:"redraws"`
 }
 type View struct {
+	Lobby        bool          `json:"lobby,omitempty"`
+	LobbyReady   [2]bool       `json:"lobbyReady"`
+	GameNumber   int           `json:"gameNumber"`
+	RematchReady [2]bool       `json:"rematchReady"`
 	Timer        TurnTimer     `json:"timer"`
 	Code         string        `json:"code"`
 	EventSeq     int           `json:"eventSeq"`
@@ -1760,10 +1792,10 @@ type BotPublic struct {
 
 func cardView(card Card, c Catalog) CardView {
 	d := c[card.Def]
-	return CardView{Faction: d.Deck, UID: card.UID, Def: card.Def, Key: d.StableKey(), NameRu: d.RussianName(), Description: d.Description(), DescriptionEn: d.DescriptionEn(), Name: d.Name, Power: d.Power() + card.Boost, Ability: d.Ability, Row: d.Row, Image: d.Artwork(), Special: d.Deck == "weather" || d.Deck == "special"}
+	return CardView{BasePower: d.Power(), Faction: d.Deck, UID: card.UID, Def: card.Def, Key: d.StableKey(), NameRu: d.RussianName(), Description: d.Description(), DescriptionEn: d.DescriptionEn(), Name: d.Name, Power: d.Power() + card.Boost, Ability: d.Ability, Row: d.Row, Image: d.Artwork(), Special: d.Deck == "weather" || d.Deck == "special"}
 }
 func (r *Room) projectState(seat int, c Catalog) View {
-	v := View{Timer: r.TimerSettings(), Code: r.Code, Mode: r.Mode, Status: r.Status, Phase: r.Phase, Version: r.Version, ExpiresAt: r.ExpiresAt, TurnDeadline: r.TurnDeadline, ServerTime: time.Now().UTC(), Seat: seat, Turn: r.Turn, Initiative: r.Initiative, PendingOwner: r.PendingOwner, Round: r.Round, RoundHistory: append([]RoundResult(nil), r.RoundHistory...), Winner: r.Winner, Weather: append([]string{}, r.Weather...), Events: append([]string{}, r.Events...), Players: []PlayerView{}}
+	v := View{Lobby: r.Lobby, LobbyReady: r.LobbyReady, GameNumber: r.GameNumber, RematchReady: r.RematchReady, Timer: r.TimerSettings(), Code: r.Code, Mode: r.Mode, Status: r.Status, Phase: r.Phase, Version: r.Version, ExpiresAt: r.ExpiresAt, TurnDeadline: r.TurnDeadline, ServerTime: time.Now().UTC(), Seat: seat, Turn: r.Turn, Initiative: r.Initiative, PendingOwner: r.PendingOwner, Round: r.Round, RoundHistory: append([]RoundResult(nil), r.RoundHistory...), Winner: r.Winner, Weather: append([]string{}, r.Weather...), Events: append([]string{}, r.Events...), Players: []PlayerView{}}
 	for _, card := range r.WeatherCards {
 		v.WeatherCards = append(v.WeatherCards, cardView(card.Card, c))
 	}

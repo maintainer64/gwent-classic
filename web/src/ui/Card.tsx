@@ -1,4 +1,5 @@
 import { motion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
 import type { CardInfo, LeaderChoice } from '../domain/types'
 import { CardLanguageToggle, useCardText } from '../i18n/cards'
 export const leaderInfo = (leader: LeaderChoice): CardInfo => ({
@@ -74,6 +75,21 @@ export function Card({
 }
 // One image and the same overlays serve compact cards and full previews.
 function CardArtwork({ card, classic }: { card: CardInfo; classic: boolean }) {
+  const identity = `${card.key}:${'uid' in card ? card.uid : ''}`
+  const previous = useRef({ identity, power: card.power })
+  const [change, setChange] = useState('')
+  useEffect(() => {
+    const old = previous.current
+    previous.current = { identity, power: card.power }
+    if (old.identity !== identity) {
+      setChange('')
+      return
+    }
+    if (old.power === card.power) return
+    setChange(card.power > old.power ? 'up' : 'down')
+    const timer = setTimeout(() => setChange(''), 850)
+    return () => clearTimeout(timer)
+  }, [identity, card.power])
   const unit = ['close', 'ranged', 'siege', 'agile'].includes(card.row)
   const hero = card.ability.split(' ').includes('hero')
   const keyword = card.ability
@@ -102,7 +118,20 @@ function CardArtwork({ card, classic }: { card: CardInfo; classic: boolean }) {
             className="card-strength"
             style={{ backgroundImage: `url(/img/icons/power_${powerIcon}.png)` }}
           >
-            {unit && <b>{card.power}</b>}
+            {unit && (
+              <b
+                data-power-change={change}
+                data-power-state={
+                  card.power > (card.basePower ?? card.power)
+                    ? 'boosted'
+                    : card.power < (card.basePower ?? card.power)
+                      ? 'reduced'
+                      : 'normal'
+                }
+              >
+                {card.power}
+              </b>
+            )}
           </span>
         ) : (
           <span className="card-strength">

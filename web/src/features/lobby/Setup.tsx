@@ -1,5 +1,7 @@
 import { TimerSettings, parseTimer, type TimerDraft } from '../settings/TimerSettings'
 import { useCardText } from '../../i18n/cards'
+import { Invitation } from './Invitation'
+import type { Room } from '../../domain/types'
 import type { SavedDeck } from '../decks/model'
 import { stats } from '../decks/model'
 import {
@@ -39,6 +41,8 @@ export function Setup({
   onStart,
   onEdit,
   onBack,
+  inviteRoom,
+  onInvite,
 }: {
   state: SetupState
   onChange: (patch: Partial<SetupState>) => void
@@ -50,6 +54,8 @@ export function Setup({
   onStart: () => void
   onEdit: (purpose: 'player' | 'bot') => void
   onBack: () => void
+  inviteRoom?: Room | null
+  onInvite: () => void
 }) {
   const { name } = useCardText()
   const player = decks.find((d) => d.id === state.playerDeck) ?? decks[0],
@@ -65,7 +71,13 @@ export function Setup({
       <div className="section-heading">
         <div>
           <p className="eyebrow">{joinCode ? `Приглашение · ${joinCode}` : 'Время для партии'}</p>
-          <h1>{joinCode ? 'Вас ждут за столом' : 'Выберите соперника'}</h1>
+          <h1>
+            {joinCode
+              ? 'Вас ждут за столом'
+              : inviteRoom
+                ? 'Подготовьтесь к партии'
+                : 'Выберите соперника'}
+          </h1>
           <p className="muted">Одна колода. Три раунда. Два камня жизни.</p>
         </div>
         <button className="button quiet" onClick={onBack}>
@@ -136,7 +148,7 @@ export function Setup({
         </section>
         <section className="setup-opponent panel">
           <p className="eyebrow">По ту сторону стола</p>
-          {!joinCode && (
+          {!joinCode && !inviteRoom && (
             <div className="mode-options">
               {(['bot', 'pvp'] as const).map((mode) => (
                 <button
@@ -257,6 +269,8 @@ export function Setup({
                 </>
               )}
             </>
+          ) : inviteRoom ? (
+            <Invitation room={inviteRoom} />
           ) : (
             <div className="friend-explainer">
               <span>♧</span>
@@ -264,9 +278,14 @@ export function Setup({
               <p>
                 {joinCode
                   ? 'Выберите свою колоду и присоединяйтесь.'
-                  : 'После создания комнаты появится ссылка. Отправьте её другу: он сможет выбрать свою фракцию, лидера и колоду.'}
+                  : 'Ссылку можно создать сразу. Друг подключится, пока вы выбираете фракцию, лидера и колоду.'}
               </p>
               <small>Обновление страницы и возвращение в меню сохраняют ваше место.</small>
+              {!joinCode && (
+                <button className="button quiet full" disabled={busy} onClick={onInvite}>
+                  Создать ссылку приглашения
+                </button>
+              )}
             </div>
           )}
           {!joinCode && <TimerSettings value={state} onChange={onChange} />}
@@ -288,11 +307,13 @@ export function Setup({
         <button className="button primary large" disabled={busy || !valid} onClick={onStart}>
           {busy
             ? 'Готовим стол…'
-            : joinCode
-              ? 'Присоединиться к партии'
-              : state.mode === 'bot'
-                ? 'Начать партию'
-                : 'Создать комнату'}
+            : inviteRoom
+              ? 'Готово · начать партию'
+              : joinCode
+                ? 'Присоединиться к партии'
+                : state.mode === 'bot'
+                  ? 'Начать партию'
+                  : 'Создать комнату'}
         </button>
       </div>
     </div>

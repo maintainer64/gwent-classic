@@ -10,6 +10,7 @@ const eventDuration: Record<string, number> = {
   leader: 520,
   round_end: 1100,
   resolved: 90,
+  weather: 1250,
 }
 export function useMatch() {
   const [room, setRoom] = useState<Room | null>(null),
@@ -32,6 +33,7 @@ export function useMatch() {
     if (running.current) return
     running.current = true
     const generation = epoch.current
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     setAnimating(true)
     while (queue.current.length && generation === epoch.current) {
       const next = queue.current.shift()!,
@@ -40,7 +42,8 @@ export function useMatch() {
       setEvent(next)
       let hand =
         visual.current?.players[latest.seat]?.hand ?? latest.players[latest.seat]?.hand ?? []
-      if (next.type === 'placed' && next.card) hand = hand.filter((c) => c.uid !== next.card!.uid)
+      if ((next.type === 'placed' || next.type === 'weather') && next.card)
+        hand = hand.filter((c) => c.uid !== next.card!.uid)
       if (
         next.type === 'draw' &&
         next.actor === latest.seat &&
@@ -53,6 +56,7 @@ export function useMatch() {
       const frame = {
         ...latest,
         ...next.frame,
+        weatherCards: next.frame.weatherCards ?? [],
         players: next.frame.players.map((p, i) => ({
           ...p,
           hand: i === latest.seat ? hand : undefined,
@@ -62,7 +66,12 @@ export function useMatch() {
       }
       visual.current = frame
       setDisplay(frame)
-      await new Promise((resolve) => setTimeout(resolve, eventDuration[next.type] ?? 250))
+      await new Promise((resolve) =>
+        setTimeout(
+          resolve,
+          reduced ? (next.type === 'weather' ? 650 : 40) : (eventDuration[next.type] ?? 250),
+        ),
+      )
     }
     if (generation === epoch.current) {
       running.current = false
@@ -73,14 +82,17 @@ export function useMatch() {
     }
   }, [])
   const accept = useCallback(
-    (next: Room, snapshot = false) => {
+    (next: Room, _snapshot = false) => {
       if (!current.current || next.code !== current.current.code) return
       if (next.version < current.current.version) return
-      const preparing = current.current.status === 'waiting' && next.phase === 'mulligan'
+      const preparing =
+        next.phase === 'mulligan' &&
+        (current.current.phase !== 'mulligan' ||
+          current.current.status === 'waiting' ||
+          next.gameNumber !== current.current.gameNumber)
       current.current = next
       setRoom(next)
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      if (snapshot || preparing || document.hidden || reduced) {
+      if (preparing) {
         epoch.current++
         queue.current = []
         running.current = false
@@ -150,7 +162,10 @@ export function useMatch() {
           if (session.current !== generation || current.current?.code !== code) return
           accept(fresh, true)
           // Ready is safe to retry after a competing redraw/ready. A card play is not.
-          if (
+          if (move.type === 'rematch') {
+            if (fresh.status !== 'finished' || fresh.rematchReady?.[fresh.seat]) return
+            next = await api.move(code, fresh.version, move)
+          } else if (
             move.type === 'ready' &&
             fresh.phase === 'mulligan' &&
             !fresh.players[fresh.seat].ready

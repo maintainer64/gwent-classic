@@ -820,6 +820,35 @@
   color: #ac875a65;
   text-align: center;
 }
+.classic-match .weather-well.legal {
+  border-radius: 2px;
+  outline: 1px solid #e4bd5e99;
+  background: #ead16b18;
+  box-shadow:
+    inset 0 0 26px #e4bd5e22,
+    0 0 12px #e4bd5e33;
+}
+.weather-well.legal > span {
+  color: #ead49b;
+  text-shadow: 0 1px 3px #000;
+}
+.classic-match .weather-play-area {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.classic-match .weather-play-area:hover,
+.classic-match .weather-play-area:focus-visible {
+  outline: 2px solid #ead16b;
+  background: #ffe7951a;
+}
 .classic-match .pass-button {
   position: absolute;
   left: 16.45%;

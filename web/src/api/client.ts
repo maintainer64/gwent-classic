@@ -66,8 +66,20 @@ export const api = {
     mode: MatchMode
     bot?: BotSettings
     timer?: TurnTimer
-    deck: DeckEntry[]
+    deck?: DeckEntry[]
+    lobby?: boolean
   }) => request<Room>('/api/rooms', 'POST', payload),
+  prepare: (
+    code: string,
+    payload: {
+      name: string
+      faction: Faction
+      leader: number
+      deck: DeckEntry[]
+      timer: TurnTimer
+      expectedVersion: number
+    },
+  ) => request<Room>(`/api/rooms/${code}/prepare`, 'POST', payload),
   join: (
     code: string,
     payload: {

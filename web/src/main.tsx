@@ -9,6 +9,8 @@ import './ui/cards.css'
 import './features/settings/settings.css'
 import './features/match/presentation.css'
 import './features/match/result.css'
+import './features/match/weather.css'
+import './features/lobby/invitation.css'
 createRoot(document.getElementById('root')!).render(
   <MotionConfig reducedMotion="user">
     <CardLanguageProvider>

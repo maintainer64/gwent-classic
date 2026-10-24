@@ -90,12 +90,24 @@ test('complete bot game, actual card play, reconnect and Russian interface', asy
     await page.getByRole('button', { name: 'Спасовать', exact: true }).click()
     await expect.poll(async () => (await state(page)).version).toBeGreaterThan(r.version)
   }
-  await expect(page.getByRole('button', { name: 'Новая партия', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Реванш', exact: true })).toBeVisible()
   await expect(page.locator('.results-table')).toBeVisible()
   expect(await page.locator('body').innerText()).not.toMatch(
     /Scorch|Mulligan|Join game|Create game|realms/,
   )
   expect(faults).toEqual([])
+  const finished = await state(page)
+  await page.getByRole('button', { name: 'Реванш', exact: true }).click()
+  await expect(page).toHaveURL(url)
+  await expect(page.getByRole('dialog', { name: 'Подготовьте стартовую руку' })).toBeVisible()
+  const again = await state(page)
+  expect(again.code).toBe(finished.code)
+  expect(again.gameNumber).toBe((finished.gameNumber ?? 1) + 1)
+  expect(again.bot).toEqual(finished.bot)
+  expect(again.timer).toEqual(finished.timer)
+  expect(again.players.map((p) => [p.faction, p.leaderId])).toEqual(
+    finished.players.map((p) => [p.faction, p.leaderId]),
+  )
 })
 test('two isolated players: invitation, concurrent ready, WS, offline recovery and tied rounds', async ({
   browser,
@@ -140,6 +152,13 @@ test('two isolated players: invitation, concurrent ready, WS, offline recovery a
     }
     await expect(host.getByRole('dialog', { name: 'Достойная ничья' })).toBeVisible()
     await expect(guest.getByRole('dialog', { name: 'Достойная ничья' })).toBeVisible()
+    await host.getByRole('button', { name: 'Реванш', exact: true }).click()
+    await expect(host.getByRole('button', { name: 'Ждём соперника…', exact: true })).toBeDisabled()
+    await guest.getByRole('button', { name: 'Принять реванш', exact: true }).click()
+    await expect(host.getByRole('dialog', { name: 'Подготовьте стартовую руку' })).toBeVisible()
+    await expect(guest.getByRole('dialog', { name: 'Подготовьте стартовую руку' })).toBeVisible()
+    expect((await state(host)).gameNumber).toBe(2)
+    expect((await state(guest)).code).toBe((await state(host)).code)
     expect([...hostErrors, ...guestErrors]).toEqual([])
   } finally {
     await a.close()

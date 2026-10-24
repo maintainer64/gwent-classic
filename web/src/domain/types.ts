@@ -11,6 +11,7 @@ export type CardInfo = {
   description: string
   descriptionEn: string
   power: number
+  basePower?: number
   ability: string
   row: string
   image: string
@@ -81,6 +82,7 @@ export type BoardFrame = {
   weather: string[]
   round: number
   status: 'waiting' | 'playing' | 'finished'
+  weatherCards?: GameCard[]
 }
 export type MatchEvent = {
   id: number
@@ -91,6 +93,10 @@ export type MatchEvent = {
   frame: BoardFrame
 }
 export type Room = BoardFrame & {
+  lobby?: boolean
+  lobbyReady?: boolean[]
+  gameNumber?: number
+  rematchReady?: boolean[]
   code: string
   mode: MatchMode
   phase: 'mulligan' | 'turn'
@@ -120,7 +126,7 @@ export type RoomSummary = {
   expiresAt: string
 }
 export type Move = {
-  type: 'pass' | 'play' | 'leader' | 'initiative' | 'redraw' | 'ready' | 'revive'
+  type: 'pass' | 'play' | 'leader' | 'initiative' | 'redraw' | 'ready' | 'revive' | 'rematch'
   uid?: string
   row?: string
   target?: string

@@ -1,0 +1,40 @@
+.early-invitation {
+  padding: 24px;
+  border: 1px solid #ac8d4c66;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #6a4c1a1f, transparent), #111a1e;
+}
+.early-invitation h2 {
+  margin: 8px 0 12px;
+  color: #dfc890;
+  font:
+    400 28px/1.2 Georgia,
+    serif;
+}
+.early-invitation > p {
+  color: #b8b7a7;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.early-invitation label {
+  margin-top: 20px;
+}
+.early-invitation input {
+  font-size: 13px;
+}
+.early-invitation .button {
+  margin-top: 12px;
+}
+.early-invitation .invitation-status {
+  color: #b5c9a7;
+  font-size: 13px;
+  margin: 16px 0 0;
+}
+.early-invitation .invitation-copy-status {
+  color: #e2c787;
+  font-size: 12px;
+  margin: 8px 0 0;
+}
+.friend-explainer > .button {
+  margin-top: 20px;
+}

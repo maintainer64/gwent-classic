@@ -226,12 +226,14 @@ export function CardInspection({
   actionLabel = 'Закрыть',
   onPlay,
   onClose,
+  notice = '',
 }: {
   card: CardInfo
   canPlay?: boolean
   actionLabel?: string
   onPlay: () => void
   onClose: () => void
+  notice?: string
 }) {
   const { name } = useCardText()
   const preview = { ...card, uid: card.key }
@@ -240,7 +242,7 @@ export function CardInspection({
       cards={[preview]}
       selected={preview}
       title={name(card)}
-      instruction={card.row === 'leader' ? 'Способность лидера' : 'Просмотр карты'}
+      instruction={notice || (card.row === 'leader' ? 'Способность лидера' : 'Просмотр карты')}
       canPlay={canPlay}
       hint=""
       actionLabel={actionLabel}

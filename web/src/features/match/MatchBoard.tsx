@@ -29,9 +29,10 @@ import {
 } from './HandPreview'
 import { MatchAnnouncements } from './MatchAnnouncements'
 import { MatchResult } from './MatchResult'
+import { RowWeather, WeatherResolution, weatherKind } from './RowWeather'
 import { CardLanguageToggle, cardName, useCardText, type CardLanguage } from '../../i18n/cards'
 import { cardsText } from '../../i18n/ru'
-import { has, isUnit, legalRows } from './rules'
+import { has, isUnit, isWeather, legalRows } from './rules'
 
 type Choice = {
   title: string
@@ -302,32 +303,38 @@ export function MatchBoard({
   useEffect(() => {
     if (!event) return
     const sound =
-      event.type === 'played'
-        ? (event.card?.ability
-            .split(' ')
-            .filter((a) =>
-              [
-                'spy',
-                'bond',
-                'morale',
-                'hero',
-                'medic',
-                'horn',
-                'muster',
-                'scorch',
-                'mardroeme',
-                'decoy',
-                'frost',
-                'rain',
-                'fog',
-                'clear',
-              ].includes(a),
-            )
-            .at(-1) ??
-          `common_${event.row ?? (event.card?.row === 'agile' ? 'close' : event.card?.row) ?? 'close'}`)
-        : event.type === 'draw'
-          ? 'draw'
-          : null
+      event.type === 'weather'
+        ? weatherKind(event.card?.ability ?? '') === 'storm'
+          ? 'rain'
+          : weatherKind(event.card?.ability ?? '')
+        : event.type === 'played' &&
+            event.card?.faction !== 'weather' &&
+            event.card?.row !== 'weather'
+          ? (event.card?.ability
+              .split(' ')
+              .filter((a) =>
+                [
+                  'spy',
+                  'bond',
+                  'morale',
+                  'hero',
+                  'medic',
+                  'horn',
+                  'muster',
+                  'scorch',
+                  'mardroeme',
+                  'decoy',
+                  'frost',
+                  'rain',
+                  'fog',
+                  'clear',
+                ].includes(a),
+              )
+              .at(-1) ??
+            `common_${event.row ?? (event.card?.row === 'agile' ? 'close' : event.card?.row) ?? 'close'}`)
+          : event.type === 'draw'
+            ? 'draw'
+            : null
     if (sound) playEffect(sound)
   }, [event, room.seat, room.winner, playEffect])
   useEffect(() => {
@@ -400,10 +407,12 @@ export function MatchBoard({
         })
       else void send({ type: 'leader' })
     } else if (ability === 'eredin_king') {
-      const cards = (me.deckChoices ?? []).filter((c) => c.row === 'weather')
+      const cards = (me.deckChoices ?? []).filter(isWeather)
       if (cards.length)
         ask({
           title: 'Выберите погоду из колоды',
+          gallery: true,
+          actionLabel: 'Сыграть погоду',
           cards,
           onChoose: (cards) => {
             void send({ type: 'leader', target: cards[0].uid })
@@ -449,10 +458,14 @@ export function MatchBoard({
             : ''
           : kind === 'ranged'
             ? display.weather.some((w) => ['fog', 'storm'].includes(w))
-              ? 'fog'
+              ? display.weather.includes('storm')
+                ? 'storm'
+                : 'fog'
               : ''
             : display.weather.some((w) => ['rain', 'storm'].includes(w))
-              ? 'rain'
+              ? display.weather.includes('storm')
+                ? 'storm'
+                : 'rain'
               : ''
     const score = player.rows[kind].reduce((n, c) => n + c.power, 0)
     return (
@@ -463,6 +476,10 @@ export function MatchBoard({
         data-row={kind}
         data-seat={seat}
       >
+        <RowWeather
+          weather={weather}
+          seed={seat * 3 + ['close', 'ranged', 'siege'].indexOf(kind)}
+        />
         <div
           className="row-destination"
           aria-label={`${ROWS[kind]}${seat !== room.seat ? ' соперника' : ''}: ${score}`}
@@ -575,6 +592,17 @@ export function MatchBoard({
       return 'Все ячейки особых карт заняты. Выберите другую карту.'
     return ''
   }
+  const weatherPlayable = Boolean(
+    canPlay &&
+    selected &&
+    isWeather(selected) &&
+    me.hand?.some((card) => card.uid === selected.uid) &&
+    !handOpen &&
+    !choice &&
+    !revivalRow &&
+    !inspect &&
+    leaderPreview === null,
+  )
   const commitHand = (card: GameCard) => {
     if (!canPlay || unavailableCard(card) || !me.hand?.some((c) => c.uid === card.uid)) return
     setHandOpen(false)
@@ -597,6 +625,25 @@ export function MatchBoard({
     leaderPreview === null
       ? null
       : catalog.leaders.find((l) => l.id === room.players[leaderPreview]?.leaderId)
+  const requiredWeather =
+    previewedLeader &&
+    (
+      {
+        foltest_king: 'fog',
+        emhyr_imperial: 'rain',
+        francesca_pureblood: 'frost',
+        eredin_king: 'any',
+      } as Record<string, string>
+    )[previewedLeader.ability]
+  const missingWeather =
+    leaderPreview === room.seat &&
+    requiredWeather &&
+    !(me.deckChoices ?? []).some(
+      (card) => isWeather(card) && (requiredWeather === 'any' || has(card, requiredWeather)),
+    )
+  const weatherNotice = missingWeather
+    ? `В оставшейся колоде нет карты «${({ fog: 'Мгла', rain: 'Дождь', frost: 'Мороз', any: 'Погода' } as Record<string, string>)[requiredWeather]}»`
+    : ''
   const copy = async () => {
     try {
       if (!navigator.clipboard) throw new Error()
@@ -608,13 +655,21 @@ export function MatchBoard({
       setCopied(true)
     }
   }
-  if (!op || !other)
+  if (room.status === 'waiting' || !op || !other)
     return (
       <div className="waiting-screen">
         <p className="eyebrow">Комната {room.code}</p>
         <span className="waiting-symbol">♧</span>
-        <h1>Место напротив свободно</h1>
-        <p>Отправьте другу приглашение. Он выберет колоду, и партия начнётся.</p>
+        <h1>
+          {room.lobby && room.seat === 1 && !room.lobbyReady?.[0]
+            ? 'Соперник готовит колоду'
+            : 'Место напротив свободно'}
+        </h1>
+        <p>
+          {room.lobby && room.seat === 1 && !room.lobbyReady?.[0]
+            ? 'Вы подключились. Партия начнётся, когда создатель комнаты подтвердит готовность.'
+            : 'Отправьте другу приглашение. Он выберет колоду, и партия начнётся.'}
+        </p>
         <label>
           Ссылка приглашения
           <input
@@ -789,7 +844,7 @@ export function MatchBoard({
             <PlayerPanel
               player={other}
               me={false}
-              active={room.turn !== room.seat}
+              active={(event?.actor ?? room.turn) !== room.seat}
               portrait={
                 catalog.leaders.find((l) => l.id === other.leaderId)?.image ??
                 `/img/icons/deck_shield_${other.faction}.png`
@@ -799,7 +854,7 @@ export function MatchBoard({
             <PlayerPanel
               player={own}
               me
-              active={room.turn === room.seat}
+              active={(event?.actor ?? room.turn) === room.seat}
               portrait={
                 catalog.leaders.find((l) => l.id === own.leaderId)?.image ??
                 `/img/icons/deck_shield_${own.faction}.png`
@@ -839,13 +894,30 @@ export function MatchBoard({
                 </span>
               ))}
             </div>
-            <div className="weather-well" aria-label="Погода">
-              {room.weatherCards?.length ? (
-                room.weatherCards.map((c) => (
+            <div className={`weather-well ${weatherPlayable ? 'legal' : ''}`} aria-label="Погода">
+              {event?.type === 'weather' &&
+              weatherKind(event.card?.ability ?? '') === 'clear' &&
+              event.card ? (
+                <Card card={event.card} classic zone="weather-clearing" />
+              ) : display.weatherCards?.length ? (
+                display.weatherCards.map((c) => (
                   <Card key={c.uid} card={c} classic zone="weather" onClick={() => setInspect(c)} />
                 ))
               ) : (
-                <span>Погодные эффекты</span>
+                <span>{weatherPlayable ? 'Сыграть погоду' : 'Погодные эффекты'}</span>
+              )}
+              {weatherPlayable && (
+                <button
+                  type="button"
+                  className="weather-play-area"
+                  aria-label="Сыграть погоду"
+                  onClick={() => {
+                    if (!weatherPlayable || !selected) return
+                    const card = selected
+                    setSelected(null)
+                    void play(card)
+                  }}
+                />
               )}
             </div>
             <button
@@ -898,9 +970,11 @@ export function MatchBoard({
                     <small>
                       {has(selected, 'decoy')
                         ? 'Выберите свой отряд на поле'
-                        : legalRows(selected, me).length
-                          ? 'Выберите подсвеченный ряд'
-                          : 'Подтвердите розыгрыш'}
+                        : isWeather(selected)
+                          ? 'Нажмите область погодных эффектов'
+                          : legalRows(selected, me).length
+                            ? 'Выберите подсвеченный ряд'
+                            : 'Подтвердите розыгрыш'}
                     </small>
                   </span>
                   <button onClick={() => openHand()}>Рассмотреть руку</button>
@@ -953,6 +1027,7 @@ export function MatchBoard({
       <p className="portrait-hint">
         Поле можно сдвигать в сторону. В альбомной ориентации видно весь стол.
       </p>
+      <WeatherResolution event={event} />
       {showLog && (
         <Dialog title="Ход партии" onClose={() => setShowLog(false)}>
           <ol className="game-history">
@@ -1016,6 +1091,7 @@ export function MatchBoard({
         </Dialog>
       )}
       {Boolean(room.pendingOwner) &&
+        !animating &&
         room.status === 'playing' &&
         (room.pendingOwner === room.seat + 1 ? (
           <CardChoice
@@ -1129,11 +1205,13 @@ export function MatchBoard({
       {previewedLeader && leaderPreview !== null && (
         <CardInspection
           card={leaderInfo(previewedLeader)}
+          notice={weatherNotice}
           onClose={() => setLeaderPreview(null)}
           canPlay={
             leaderPreview !== room.seat ||
             !(
               !canPlay ||
+              missingWeather ||
               me.leaderUsed ||
               me.leaderPassive ||
               (previewedLeader.ability === 'eredin_destroyer' &&
@@ -1144,16 +1222,25 @@ export function MatchBoard({
           actionLabel={
             leaderPreview !== room.seat
               ? 'Закрыть'
-              : me.leaderUsed
-                ? 'Способность использована'
-                : me.leaderPassive
-                  ? 'Пассивная способность'
-                  : 'Применить способность'
+              : missingWeather
+                ? 'Нет карты в колоде'
+                : me.leaderUsed
+                  ? 'Способность использована'
+                  : me.leaderPassive
+                    ? 'Пассивная способность'
+                    : 'Применить способность'
           }
         />
       )}
       {room.status === 'finished' && !animating && (
-        <MatchResult room={room} onHome={onHome} onRematch={onRematch} />
+        <MatchResult
+          room={room}
+          onHome={onHome}
+          onRematch={onRematch}
+          busy={busy}
+          live={live}
+          error={error}
+        />
       )}
     </div>
   )
