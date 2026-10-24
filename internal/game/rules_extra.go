@@ -97,7 +97,7 @@ func (r *Room) reviveTargetAt(owner int, target, targetRow string, c Catalog) *C
 		return nil
 	}
 	if r.randomRevival(c) {
-		target = options[randomInt(len(options))].UID
+		target = options[r.randomInt(len(options))].UID
 	}
 	for _, card := range options {
 		if card.UID != target {
@@ -234,7 +234,7 @@ func (r *Room) triggerRemoved(owner int, card Card, c Catalog) {
 		replacement = c.Find("Hemdall")
 	}
 	if replacement >= 0 && replacement < len(c) {
-		fresh := Card{UID: randomUID(), Def: replacement}
+		fresh := Card{UID: r.effectUID(), Def: replacement}
 		r.place(owner, fresh, "close", c)
 		r.note(d.RussianName() + " призвал " + c[replacement].RussianName())
 	}
@@ -251,7 +251,7 @@ func (r *Room) rowSpecial(player int, row string) []Card {
 
 func (r *Room) revealOpponentHand(player int, c Catalog) {
 	opp := append([]Card(nil), r.Players[1-player].Hand...)
-	shuffle(opp)
+	r.shuffle(opp)
 	r.Players[player].Peek = opp[:min(3, len(opp))]
 }
 

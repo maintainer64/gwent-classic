@@ -1,0 +1,67 @@
+{
+  "policy": "resource-mc-v1",
+  "date": "2026-10-24",
+  "method": "25 faction pairs, 10 seeds per pair, both candidate seats; 500 games per result; win=1, draw=0.5",
+  "scope": "Existing generated decks: up to 27 units and 8 specials; balanced style; fresh held-out seeds. This is not a benchmark against humans.",
+  "runs": [
+    {
+      "opponent": "normal",
+      "seeds": [
+        21,
+        30
+      ],
+      "results": [
+        {
+          "policy": "resource-mc-v1",
+          "opponent": "normal",
+          "level": "normal",
+          "Wins": 247,
+          "Draws": 6,
+          "Losses": 247,
+          "ScoreShare": 0.5,
+          "MeanDecisionMilliseconds": 0.12184553340435246
+        },
+        {
+          "policy": "resource-mc-v1",
+          "opponent": "normal",
+          "level": "hard",
+          "Wins": 294,
+          "Draws": 13,
+          "Losses": 193,
+          "ScoreShare": 0.601,
+          "MeanDecisionMilliseconds": 16.660325892179195
+        }
+      ]
+    },
+    {
+      "opponent": "legacy-hard",
+      "seeds": [
+        31,
+        40
+      ],
+      "results": [
+        {
+          "policy": "resource-mc-v1",
+          "opponent": "legacy-hard",
+          "level": "normal",
+          "Wins": 331,
+          "Draws": 9,
+          "Losses": 160,
+          "ScoreShare": 0.671,
+          "MeanDecisionMilliseconds": 0.11701478861919305
+        },
+        {
+          "policy": "resource-mc-v1",
+          "opponent": "legacy-hard",
+          "level": "hard",
+          "Wins": 377,
+          "Draws": 8,
+          "Losses": 115,
+          "ScoreShare": 0.762,
+          "MeanDecisionMilliseconds": 17.372382125603867
+        }
+      ]
+    }
+  ],
+  "timing_context": "Apple M3 Pro development machine, concurrent native test runs; timings are descriptive, not production latency guarantees."
+}

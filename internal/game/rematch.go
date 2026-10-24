@@ -44,6 +44,15 @@ func (r *Room) requestRematch(seat int, c Catalog) error {
 					return err
 				}
 			}
+			if i == 1 && r.Bot != nil && r.Bot.DeckMode == BotOpponent {
+				profile, err := resolveOpponent(r.Bot.Opponent, c)
+				if err != nil {
+					return err
+				}
+				if err := assignCustomDeck(&p, c, profile.Faction, profile.Deck); err != nil {
+					return err
+				}
+			}
 			original = p.Deck
 		}
 		deck := make([]Card, len(original))

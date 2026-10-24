@@ -193,9 +193,10 @@ const (
 type BotDeckMode string
 
 const (
-	BotRandom  BotDeckMode = "random"
-	BotFaction BotDeckMode = "faction"
-	BotCustom  BotDeckMode = "custom"
+	BotRandom   BotDeckMode = "random"
+	BotFaction  BotDeckMode = "faction"
+	BotCustom   BotDeckMode = "custom"
+	BotOpponent BotDeckMode = "opponent"
 )
 
 type DeckEntry struct {
@@ -204,6 +205,7 @@ type DeckEntry struct {
 	Key   string `json:"key,omitempty"`
 }
 type BotOptions struct {
+	Opponent   string        `json:"opponent,omitempty"`
 	Style      string        `json:"style,omitempty"`
 	Leader     int           `json:"leader,omitempty"`
 	Difficulty BotDifficulty `json:"difficulty"`
@@ -213,6 +215,18 @@ type BotOptions struct {
 }
 
 func (o BotOptions) normalize() (BotOptions, error) {
+	if o.DeckMode == BotOpponent {
+		profile, ok := findOpponent(o.Opponent)
+		if !ok {
+			return o, errors.New("unknown opponent")
+		}
+		if (o.Faction != "" && o.Faction != profile.Faction) || o.Leader != 0 || len(o.Deck) != 0 {
+			return o, errors.New("opponent deck and leader are fixed")
+		}
+		o.Faction, o.Style = profile.Faction, profile.Style
+	} else if o.Opponent != "" {
+		return o, errors.New("opponent requires opponent deck mode")
+	}
 	if o.Style == "" {
 		o.Style = "balanced"
 	}
@@ -228,7 +242,7 @@ func (o BotOptions) normalize() (BotOptions, error) {
 	if o.Difficulty != BotEasy && o.Difficulty != BotNormal && o.Difficulty != BotHard {
 		return o, errors.New("invalid bot difficulty")
 	}
-	if o.DeckMode != BotRandom && o.DeckMode != BotFaction && o.DeckMode != BotCustom {
+	if o.DeckMode != BotRandom && o.DeckMode != BotFaction && o.DeckMode != BotCustom && o.DeckMode != BotOpponent {
 		return o, errors.New("invalid bot deck mode")
 	}
 	if o.DeckMode == BotRandom {
@@ -312,6 +326,20 @@ func assignCustomDeck(p *Player, c Catalog, faction string, deck []DeckEntry) er
 }
 
 func (o BotOptions) makePlayer(c Catalog) (Player, error) {
+	if o.DeckMode == BotOpponent {
+		profile, err := resolveOpponent(o.Opponent, c)
+		if err != nil {
+			return Player{}, err
+		}
+		p, err := addPlayer("BOT", profile.Name, profile.Faction, c, profile.Leader)
+		if err != nil {
+			return Player{}, err
+		}
+		if err := assignCustomDeck(&p, c, profile.Faction, profile.Deck); err != nil {
+			return Player{}, err
+		}
+		return p, nil
+	}
 	p, err := addPlayer("BOT", "Бот", o.Faction, c, o.Leader)
 	if err != nil {
 		return Player{}, err
@@ -382,6 +410,7 @@ type Room struct {
 	Transitions   []MatchEvent       `json:"transitions,omitempty"`
 	simulating    bool
 	clearingRound bool
+	randomState   uint64 // Nonzero only in private simulations and reproducible tests.
 }
 type Action struct {
 	Type      string   `json:"type"`
@@ -394,6 +423,9 @@ type Action struct {
 }
 
 func (r *Room) note(msg string) {
+	if r.simulating {
+		return
+	}
 	r.Events = append(r.Events, msg)
 	if len(r.Events) > 25 {
 		r.Events = r.Events[len(r.Events)-25:]
@@ -515,6 +547,9 @@ func NewRoomWithDeck(code, mode, id, name, faction string, c Catalog, now time.T
 			return nil, err
 		}
 		if botLeader != 0 { // Optional supported leader from the bot faction.
+			if option.DeckMode == BotOpponent {
+				return nil, errors.New("opponent leader is fixed")
+			}
 			valid := false
 			for _, o := range LeaderOptions(c) {
 				if o.ID == botLeader && o.Faction == option.Faction {
@@ -581,7 +616,7 @@ func (r *Room) start(c Catalog) {
 			r.Players[i].LeaderUsed = true
 		}
 	}
-	r.Turn = randomInt(2)
+	r.Turn = r.randomInt(2)
 	r.RoundStarter = r.Turn
 	r.Initiative = 0
 	if r.Players[0].Faction == "scoiatael" && r.Players[1].Faction != "scoiatael" {
@@ -591,7 +626,7 @@ func (r *Room) start(c Catalog) {
 		r.Initiative = 2
 	}
 	if r.Mode == "bot" && r.Initiative == 2 {
-		r.Turn = randomInt(2)
+		r.Turn = r.randomInt(2)
 		r.Initiative = 0
 	}
 	for i := range r.Players {
@@ -604,20 +639,12 @@ func (r *Room) start(c Catalog) {
 		r.draw(i, count, c)
 	}
 	if r.Mode == "bot" {
-		// A bot redraws up to two low-value cards; it never skips the opening
-		// redraw phase or sees its opponent's hand.
 		for n := 0; n < 2; n++ {
-			bot := &r.Players[1]
-			if len(bot.Deck) == 0 || len(bot.Hand) == 0 {
+			uid := r.botRedrawChoice(1, c)
+			if uid == "" {
 				break
 			}
-			weakest := bot.Hand[0]
-			for _, card := range bot.Hand {
-				if c[card.Def].Power() < c[weakest.Def].Power() {
-					weakest = card
-				}
-			}
-			_ = r.redraw(1, weakest.UID, c)
+			_ = r.redraw(1, uid, c)
 		}
 		r.Players[1].Ready = true
 	}
@@ -932,18 +959,26 @@ func (r *Room) play(player int, a Action, c Catalog) error {
 	r.emit("resolved", player, &card, a.Row, false, c)
 	return nil
 }
+func (r *Room) roundWinner(c Catalog) int {
+	a, b := r.Score(0, c), r.Score(1, c)
+	if a > b {
+		return 0
+	}
+	if b > a {
+		return 1
+	}
+	if r.Players[0].Faction == "nilfgaard" && r.Players[1].Faction != "nilfgaard" {
+		return 0
+	}
+	if r.Players[1].Faction == "nilfgaard" && r.Players[0].Faction != "nilfgaard" {
+		return 1
+	}
+	return -1
+}
+
 func (r *Room) finishRound(c Catalog) {
 	a, b := r.Score(0, c), r.Score(1, c)
-	winner := -1
-	if a > b {
-		winner = 0
-	} else if b > a {
-		winner = 1
-	} else if r.Players[0].Faction == "nilfgaard" && r.Players[1].Faction != "nilfgaard" {
-		winner = 0
-	} else if r.Players[1].Faction == "nilfgaard" && r.Players[0].Faction != "nilfgaard" {
-		winner = 1
-	}
+	winner := r.roundWinner(c)
 	r.RoundHistory = append(r.RoundHistory, RoundResult{ScoreA: a, ScoreB: b, Winner: winner})
 	if winner == -1 {
 		r.Players[0].Wins++
@@ -986,7 +1021,7 @@ func (r *Room) finishRound(c Catalog) {
 				}
 			}
 			if len(all) > 0 {
-				retain = all[randomInt(len(all))]
+				retain = all[r.randomInt(len(all))]
 				retaining = true
 			}
 		}
@@ -1052,7 +1087,7 @@ func (r *Room) finishRound(c Catalog) {
 				if len(options) == 0 {
 					break
 				}
-				card := options[randomInt(len(options))]
+				card := options[r.randomInt(len(options))]
 				r.reviveTarget(i, card.UID, c)
 			}
 		}
@@ -1153,7 +1188,7 @@ func (r *Room) activateLeader(index int, a Action, c Catalog) error {
 			q := &r.Players[i]
 			q.Deck = append(q.Deck, q.Grave...)
 			q.Grave = nil
-			shuffle(q.Deck)
+			r.shuffle(q.Deck)
 		}
 	default:
 		return errors.New("leader has no active ability")
@@ -1181,7 +1216,7 @@ func (r *Room) redraw(index int, uid string, c Catalog) error {
 	p.Deck = p.Deck[:last]
 	p.Hand = append(p.Hand, replacement)
 	p.Deck = append(p.Deck, card)
-	shuffle(p.Deck)
+	r.shuffle(p.Deck)
 	p.Redraws--
 	return nil
 }
@@ -1436,240 +1471,6 @@ func (r *Room) Apply(index int, a Action, c Catalog) error {
 	return nil
 }
 
-// Clone via JSON: simulations must never mutate the real authoritative game state.
-func (r *Room) simulation() *Room {
-	base := *r
-	base.Transitions = nil
-	data, err := json.Marshal(&base)
-	if err != nil {
-		panic(err)
-	}
-	var clone Room
-	if err = json.Unmarshal(data, &clone); err != nil {
-		panic(err)
-	}
-	clone.simulating = true
-	return &clone
-}
-func (r *Room) candidateActions(player int, c Catalog) []Action {
-	p := r.Players[player]
-	choices := []Action{}
-	for _, card := range p.Hand {
-		d := c[card.Def]
-		if d.Has("decoy") {
-			for _, row := range []string{"close", "ranged", "siege"} {
-				for _, target := range p.Rows[row] {
-					if isUnit(c[target.Def]) {
-						choices = append(choices, Action{Type: "play", UID: card.UID, Target: target.UID})
-					}
-				}
-			}
-			continue
-		}
-		if d.Has("medic") && len(r.eligibleGrave(player, c)) > 0 && !r.randomRevival(c) {
-			for _, target := range r.eligibleGrave(player, c) {
-				row := d.Row
-				if row == "agile" {
-					row = "close"
-				}
-				targetRows := []string{""}
-				if c[target.Def].Row == "agile" {
-					targetRows = []string{"close", "ranged"}
-				}
-				for _, targetRow := range targetRows {
-					choices = append(choices, Action{Type: "play", UID: card.UID, Row: row, Target: target.UID, TargetRow: targetRow})
-				}
-			}
-			continue
-		}
-		targetRows := []string{d.Row}
-		if d.Row == "agile" || (d.Deck == "special" && (d.Has("horn") || d.Has("mardroeme"))) {
-			targetRows = []string{"close", "ranged", "siege"}
-			if d.Row == "agile" {
-				targetRows = []string{"close", "ranged"}
-			}
-		}
-		for _, row := range targetRows {
-			choices = append(choices, Action{Type: "play", UID: card.UID, Row: row})
-		}
-	}
-	if !p.LeaderUsed {
-		switch {
-		case r.leaderHas(player, c, "emhyr_relentless"):
-			for _, card := range r.eligibleGrave(1-player, c) {
-				choices = append(choices, Action{Type: "leader", Target: card.UID})
-			}
-		case r.leaderHas(player, c, "eredin_bringer_of_death"):
-			for _, card := range r.eligibleGrave(player, c) {
-				choices = append(choices, Action{Type: "leader", Target: card.UID})
-			}
-		case r.leaderHas(player, c, "eredin_destroyer"):
-			if len(p.Hand) >= 2 && len(p.Deck) > 0 {
-				// Bot discards its two weakest units and draws the strongest available one.
-				discard := append([]Card(nil), p.Hand...)
-				for i := range discard {
-					for j := i + 1; j < len(discard); j++ {
-						if c[discard[i].Def].Power() > c[discard[j].Def].Power() {
-							discard[i], discard[j] = discard[j], discard[i]
-						}
-					}
-				}
-				draw := p.Deck[0]
-				for _, card := range p.Deck {
-					if c[card.Def].Power() > c[draw.Def].Power() {
-						draw = card
-					}
-				}
-				choices = append(choices, Action{Type: "leader", Targets: []string{discard[0].UID, discard[1].UID}, Draw: draw.UID})
-			}
-		case r.leaderHas(player, c, "eredin_king"):
-			for _, card := range p.Deck {
-				if c[card.Def].Deck == "weather" {
-					choices = append(choices, Action{Type: "leader", Target: card.UID})
-				}
-			}
-		default:
-			choices = append(choices, Action{Type: "leader"})
-		}
-	}
-	return choices
-}
-func (r *Room) botChoices(c Catalog) []Action { return r.candidateActions(1, c) }
-
-func (r *Room) botChoiceScore(a Action, c Catalog, difficulty BotDifficulty) (int, bool) {
-	sim := r.simulation()
-	beforeOwn, beforeOpp := sim.Score(1, c), sim.Score(0, c)
-	var err error
-	if a.Type == "leader" {
-		err = sim.activateLeader(1, a, c)
-	} else {
-		err = sim.play(1, a, c)
-	}
-	if err != nil {
-		return 0, false
-	}
-	ownDelta, oppDelta := sim.Score(1, c)-beforeOwn, sim.Score(0, c)-beforeOpp
-	score := ownDelta - oppDelta
-	if a.Type == "leader" {
-		score += 2
-	} else {
-		d := c[cardByUID(r.Players[1].Hand, a.UID).Def]
-		if d.Has("spy") {
-			score += 17
-		}
-		if d.Has("medic") {
-			score += 5
-		}
-		if d.Has("muster") {
-			score += 3
-		}
-		if d.Has("hero") && !r.Players[0].Passed && r.Round == 1 {
-			score -= 3
-		}
-		if d.Has("decoy") {
-			score += 3
-		}
-		if d.Deck == "weather" && score <= 0 {
-			score -= 8
-		}
-	}
-	if r.Bot != nil {
-		if r.Bot.Style == "aggressive" {
-			score += ownDelta / 2
-		}
-		if r.Bot.Style == "economy" && a.Type == "play" {
-			score -= c[cardByUID(r.Players[1].Hand, a.UID).Def].Power() / 3
-			if c[cardByUID(r.Players[1].Hand, a.UID).Def].Has("spy") {
-				score += 10
-			}
-		}
-	}
-	if difficulty == BotNormal {
-		score += randomInt(12) - 5
-	}
-	return score, true
-}
-func (r *Room) Bots(c Catalog) {
-	if r.Mode != "bot" {
-		return
-	}
-	difficulty := BotNormal
-	if r.Bot != nil {
-		difficulty = r.Bot.Difficulty
-	}
-	for moves := 0; moves < 100 && r.Status == "playing" && r.Turn == 1 && r.Initiative == 0 && r.Phase != "mulligan"; moves++ {
-		p := r.Players[1]
-		if r.PendingOwner == 2 {
-			options := r.eligibleGrave(1, c)
-			if len(options) > 0 {
-				choice := options[0]
-				for _, card := range options {
-					if c[card.Def].Power() > c[choice.Def].Power() {
-						choice = card
-					}
-				}
-				_ = r.ApplyBot(Action{Type: "revive", Target: choice.UID}, c)
-				continue
-			}
-			r.PendingOwner = 0
-		}
-		own, opp := r.Score(1, c), r.Score(0, c)
-		if len(p.Hand) == 0 && (p.LeaderUsed || r.leadersNullified(c)) {
-			_ = r.ApplyBot(Action{Type: "pass"}, c)
-			continue
-		}
-		if r.Players[0].Passed && own > opp {
-			_ = r.ApplyBot(Action{Type: "pass"}, c)
-			continue
-		}
-		options := r.botChoices(c)
-		type candidate struct {
-			a     Action
-			score int
-		}
-		candidates := []candidate{}
-		for _, a := range options {
-			score, valid := r.botChoiceScore(a, c, difficulty)
-			if valid {
-				candidates = append(candidates, candidate{a, score})
-			}
-		}
-		if len(candidates) == 0 {
-			_ = r.ApplyBot(Action{Type: "pass"}, c)
-			continue
-		}
-		best := candidates[0]
-		if difficulty == BotEasy {
-			best = candidates[randomInt(len(candidates))]
-			// Easy bot sometimes surrenders a contested round to preserve cards.
-			if moves > 0 && len(p.Hand) < 5 && randomInt(8) == 0 {
-				_ = r.ApplyBot(Action{Type: "pass"}, c)
-				continue
-			}
-		} else {
-			for _, candidate := range candidates {
-				if candidate.score > best.score {
-					best = candidate
-				}
-			}
-			if (difficulty == BotHard || (r.Bot != nil && r.Bot.Style == "economy")) && r.Round < 3 && !r.Players[0].Passed && best.score < 0 && len(p.Hand) < 6 {
-				_ = r.ApplyBot(Action{Type: "pass"}, c)
-				continue
-			}
-		}
-		if err := r.ApplyBot(best.a, c); err != nil {
-			_ = r.ApplyBot(Action{Type: "pass"}, c)
-		}
-	}
-}
-func cardByUID(cards []Card, uid string) Card {
-	for _, card := range cards {
-		if card.UID == uid {
-			return card
-		}
-	}
-	return Card{}
-}
 func (r *Room) ApplyBot(a Action, c Catalog) error {
 	if r.Mode != "bot" || r.Turn != 1 || r.Status != "playing" {
 		return ErrInvalid
@@ -1784,6 +1585,7 @@ type View struct {
 	Bot          *BotPublic    `json:"bot,omitempty"`
 }
 type BotPublic struct {
+	Opponent   string        `json:"opponent,omitempty"`
 	Style      string        `json:"style"`
 	Difficulty BotDifficulty `json:"difficulty"`
 	DeckMode   BotDeckMode   `json:"deckMode"`
@@ -1800,7 +1602,7 @@ func (r *Room) projectState(seat int, c Catalog) View {
 		v.WeatherCards = append(v.WeatherCards, cardView(card.Card, c))
 	}
 	if r.Bot != nil {
-		v.Bot = &BotPublic{Style: r.Bot.Style, Difficulty: r.Bot.Difficulty, DeckMode: r.Bot.DeckMode, Faction: r.Bot.Faction}
+		v.Bot = &BotPublic{Opponent: r.Bot.Opponent, Style: r.Bot.Style, Difficulty: r.Bot.Difficulty, DeckMode: r.Bot.DeckMode, Faction: r.Bot.Faction}
 	}
 	for i, p := range r.Players {
 		pv := PlayerView{Lives: 2, LeaderID: p.Leader, Name: p.Name, Faction: p.Faction, HandCount: len(p.Hand), DeckCount: len(p.Deck), Passed: p.Passed, Wins: p.Wins, Score: r.Score(i, c), Rows: map[string][]CardView{"close": {}, "ranged": {}, "siege": {}}, Special: map[string][]CardView{"close": {}, "ranged": {}, "siege": {}}, Grave: []CardView{}, LeaderUsed: p.LeaderUsed, Ready: p.Ready, Redraws: p.Redraws}

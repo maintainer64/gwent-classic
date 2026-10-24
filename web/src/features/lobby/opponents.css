@@ -1,0 +1,499 @@
+.opponent-character {
+  margin-top: 18px;
+  border-top: 1px solid #a88b493b;
+  padding-top: 18px;
+}
+.opponent-character-heading {
+  display: grid;
+  grid-template-columns: 105px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+.opponent-character-portrait {
+  width: 105px;
+  height: 137px;
+  object-fit: cover;
+  object-position: center 15%;
+  border: 1px solid #c1a46177;
+  border-radius: 2px;
+  box-shadow: 0 5px 20px #0005;
+}
+.opponent-character h2 {
+  margin: 6px 0 10px;
+  font-size: clamp(23px, 3vw, 32px);
+  line-height: 1.1;
+}
+.opponent-character-heading .eyebrow {
+  margin: 0;
+  font-size: 11px;
+}
+.opponent-character-heading small {
+  display: block;
+  margin-top: 7px;
+  color: #ac9d83;
+}
+.opponent-faction {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--opponent-color);
+}
+.opponent-faction img {
+  width: 22px;
+  height: 28px;
+  object-fit: contain;
+}
+.opponent-description {
+  color: #d2c6ac;
+  line-height: 1.6;
+  font-size: 14px;
+}
+.opponent-signature {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0 12px;
+}
+.opponent-signature > span {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  color: #cfc3a8;
+  font-size: 11px;
+  line-height: 1.35;
+}
+.opponent-signature img {
+  width: 30px;
+  height: 42px;
+  object-fit: cover;
+  border: 1px solid #a88b4944;
+  border-radius: 2px;
+}
+.opponent-leader,
+.opponent-rule {
+  color: #a99a7d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.opponent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 12px;
+}
+.opponent-actions .button {
+  min-height: 40px;
+  padding-inline: 12px;
+  font-size: 12px;
+}
+.opponent-hint {
+  color: #c6b58f;
+  font-size: 13px;
+  margin-block: 14px;
+}
+.opponent-hint summary {
+  cursor: pointer;
+  width: fit-content;
+}
+.opponent-hint p {
+  color: #c6bca8;
+  line-height: 1.6;
+}
+.opponent-dialog {
+  max-width: 1000px;
+}
+.opponent-dialog > .muted {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.opponent-roster {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.opponent-tile {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  align-items: center;
+  gap: 13px;
+  padding: 10px;
+  border: 1px solid #a88b4938;
+  border-radius: 3px;
+  background: linear-gradient(115deg, #3b302541, #151614dd);
+  text-align: left;
+  color: #e9dfc6;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+  min-width: 0;
+}
+.opponent-tile:hover,
+.opponent-tile:focus-visible {
+  border-color: #d1b66f;
+  background: #52432b55;
+  outline: none;
+}
+.opponent-tile.selected {
+  border-color: #cfb267;
+  box-shadow: inset 0 0 0 1px #cfb26755;
+}
+.opponent-tile > img {
+  width: 74px;
+  height: 102px;
+  object-fit: cover;
+  object-position: center 15%;
+  border-radius: 2px;
+}
+.opponent-tile > span {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.opponent-tile small {
+  font-size: 10px;
+  color: var(--opponent-color);
+}
+.opponent-tile strong {
+  font-family: 'Gwent Sans', sans-serif;
+  font-size: 17px;
+  line-height: 1.2;
+}
+.player-portrait > img.character-avatar {
+  object-fit: cover;
+  object-position: center 18%;
+  border-radius: 50%;
+}
+.opponent-tile em {
+  color: #b6a78a;
+  font-size: 11px;
+  font-style: normal;
+  line-height: 1.4;
+}
+@media (max-width: 760px) {
+  .opponent-roster {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .opponent-tile {
+    grid-template-columns: 60px 1fr;
+    gap: 9px;
+    padding: 8px;
+  }
+  .opponent-tile > img {
+    width: 60px;
+    height: 87px;
+  }
+  .opponent-tile strong {
+    font-size: 15px;
+  }
+}
+@media (max-width: 420px) {
+  .opponent-tile {
+    grid-template-columns: 1fr;
+  }
+  .opponent-tile > img {
+    width: 100%;
+    height: 112px;
+    object-position: center 20%;
+  }
+  .opponent-character-heading {
+    grid-template-columns: 84px 1fr;
+    gap: 13px;
+  }
+  .opponent-character-portrait {
+    width: 84px;
+    height: 118px;
+  }
+  .opponent-signature > span {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+.hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: 18px;
+}
+.hero-links .hero-decks {
+  margin: 0;
+}
+.setup-grid.has-opponent {
+  align-items: start;
+}
+.dialog.opponent-deck {
+  width: min(1120px, 96vw);
+  height: min(880px, 94dvh);
+  max-height: 94dvh;
+  padding: 24px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #202b2b, #111b20);
+  border-color: #ae915766;
+}
+.opponent-deck[open] {
+  display: flex;
+  flex-direction: column;
+}
+.opponent-deck > header {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+.opponent-deck > header h2 {
+  font-size: clamp(20px, 2.2vw, 28px);
+  color: #e1c68f;
+}
+.opponent-deck-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  color: #bfae8d;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.opponent-deck-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 24px;
+  min-height: 0;
+  flex: 1;
+}
+.opponent-deck-list,
+.opponent-deck-detail {
+  overflow-y: auto;
+  min-width: 0;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #8b774e #131b1d;
+  padding: 4px 10px 16px 4px;
+}
+.opponent-deck-leader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #a88b4944;
+  border-radius: 4px;
+  background: #a88b490a;
+  color: #d8c8a5;
+  text-align: left;
+  cursor: pointer;
+}
+.opponent-deck-leader.selected,
+.opponent-deck-leader:hover {
+  border-color: #d0ac64;
+  background: #a88b491a;
+}
+.opponent-deck-leader img {
+  width: 36px;
+  height: 50px;
+  object-fit: cover;
+}
+.opponent-deck-leader span {
+  display: grid;
+  gap: 5px;
+}
+.opponent-deck-leader small {
+  color: #a9956f;
+  font-size: 10px;
+}
+.opponent-deck-leader strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.opponent-deck-group > h3 {
+  display: flex;
+  justify-content: space-between;
+  margin: 22px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #a88b4933;
+  font:
+    500 13px/1.3 'Gwent Sans',
+    sans-serif;
+  color: #c7b591;
+}
+.opponent-deck-group > h3 span {
+  color: #a9956f;
+}
+.opponent-deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+  gap: 16px 12px;
+}
+.opponent-deck-entry {
+  min-width: 0;
+}
+.opponent-deck-entry > span {
+  display: block;
+  margin-top: 7px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #c4b79c;
+}
+.opponent-deck-entry .card-count {
+  z-index: 3;
+  top: auto;
+  bottom: 5px;
+  min-width: 27px;
+  padding: 4px 6px;
+  text-align: center;
+  color: #f6e3b3;
+  background: #14130fee;
+  font-size: 12px;
+}
+.opponent-deck-detail {
+  padding-inline: 5px;
+}
+.opponent-deck-detail .full-card {
+  max-width: min(100%, calc((min(880px, 94dvh) - 260px) * 0.53));
+}
+.opponent-deck-detail .full-card-copy p {
+  font-size: 12px;
+  line-height: 1.4;
+}
+.opponent-deck-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  border-top: 1px solid #a88b4933;
+  padding-top: 14px;
+  margin-top: 8px;
+}
+.opponent-deck-footer > span {
+  font-size: 11px;
+  color: #a9997b;
+}
+@media (max-width: 850px) {
+  .opponent-deck-layout {
+    grid-template-columns: minmax(0, 1fr) 245px;
+    gap: 16px;
+  }
+  .opponent-deck-grid {
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 14px 10px;
+  }
+}
+@media (max-width: 600px) {
+  .dialog.opponent-deck {
+    padding: 16px;
+    height: 96dvh;
+    max-height: 96dvh;
+  }
+  .opponent-deck-summary {
+    align-items: flex-start;
+    font-size: 11px;
+    padding-bottom: 12px;
+  }
+  .opponent-deck-layout {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+  .opponent-deck-list {
+    flex: 1;
+    padding-right: 6px;
+  }
+  .opponent-deck-detail {
+    flex: 0 0 auto;
+    max-height: 32dvh;
+    padding: 0 4px 4px;
+  }
+  .opponent-deck-footer > span {
+    display: none;
+  }
+  .opponent-deck-footer .button {
+    width: 100%;
+  }
+}
+@media (max-width: 600px), (max-height: 560px) and (orientation: landscape) {
+  .opponent-deck-detail .full-card {
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr);
+    max-width: none;
+  }
+  .opponent-deck-detail .full-card-copy {
+    padding: 12px;
+    border-top: 0;
+    border-left: 1px solid #8a672c;
+  }
+  .opponent-deck-detail .full-card h3 {
+    font-size: 18px;
+    margin: 5px 0 8px;
+  }
+  .opponent-deck-detail .full-card-type {
+    font-size: 9px;
+  }
+  .opponent-deck-detail .full-card-ability {
+    font-size: 11px;
+    margin: 0 0 6px;
+  }
+  .opponent-deck-detail .full-card-copy p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  .dialog.opponent-deck {
+    height: 96dvh;
+    max-height: 96dvh;
+    padding: 14px;
+  }
+  .opponent-deck > header {
+    margin-bottom: 6px;
+  }
+  .opponent-deck > header h2 {
+    font-size: 20px;
+  }
+  .opponent-deck-summary {
+    padding-bottom: 8px;
+    font-size: 11px;
+  }
+  .opponent-deck-summary .card-language-toggle button {
+    min-height: 24px;
+  }
+  .opponent-deck-layout {
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 14px;
+  }
+  .opponent-deck-leader {
+    padding: 6px;
+    gap: 8px;
+  }
+  .opponent-deck-leader img {
+    width: 24px;
+    height: 32px;
+  }
+  .opponent-deck-leader span {
+    gap: 2px;
+  }
+  .opponent-deck-leader strong {
+    font-size: 11px;
+  }
+  .opponent-deck-group > h3 {
+    margin-block: 10px 8px;
+    padding-bottom: 5px;
+  }
+  .opponent-deck-grid {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  }
+  .opponent-deck-footer > span {
+    display: none;
+  }
+  .opponent-deck-footer {
+    padding-top: 8px;
+    margin-top: 4px;
+    justify-content: flex-end;
+  }
+  .opponent-deck-footer .button {
+    min-height: 32px;
+    padding-block: 6px;
+    font-size: 11px;
+  }
+}

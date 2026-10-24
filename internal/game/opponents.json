@@ -1,0 +1,1338 @@
+[
+  {
+    "id": "geralt",
+    "name": "Геральт",
+    "title": "Белый Волк",
+    "faction": "realms",
+    "leaderKey": "realms.foltest_gold",
+    "portraitKey": "neutral.geralt",
+    "style": "balanced",
+    "description": "Герои держат счёт, шпионы пополняют руку, а прочные связи решают исход раунда.",
+    "hint": "Не тратьте казнь на героев: приберегите её для усиленных связок.",
+    "signature": [
+      "neutral.geralt",
+      "realms.crinfrid",
+      "realms.catapult_1"
+    ],
+    "deck": [
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "realms.esterad",
+        "count": 1
+      },
+      {
+        "key": "realms.natalis",
+        "count": 1
+      },
+      {
+        "key": "realms.philippa",
+        "count": 1
+      },
+      {
+        "key": "realms.vernon",
+        "count": 1
+      },
+      {
+        "key": "realms.stennis",
+        "count": 1
+      },
+      {
+        "key": "realms.dijkstra",
+        "count": 1
+      },
+      {
+        "key": "realms.thaler",
+        "count": 1
+      },
+      {
+        "key": "realms.blue_stripes",
+        "count": 3
+      },
+      {
+        "key": "realms.crinfrid",
+        "count": 3
+      },
+      {
+        "key": "realms.catapult_1",
+        "count": 2
+      },
+      {
+        "key": "realms.banner_nurse",
+        "count": 1
+      },
+      {
+        "key": "neutral.villen",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 2
+      },
+      {
+        "key": "special.horn",
+        "count": 1
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "thaler",
+    "name": "Талер",
+    "title": "Тихая работа",
+    "faction": "realms",
+    "leaderKey": "realms.foltest_silver",
+    "portraitKey": "realms.thaler",
+    "style": "economy",
+    "description": "Четыре шпиона, три приманки и медики. Побеждает запасом карт, а не первой красивой цифрой на столе.",
+    "hint": "Следите за разницей карт в руке. Дешёвая победа в раунде ценнее большого отрыва.",
+    "signature": [
+      "realms.thaler",
+      "realms.banner_nurse",
+      "realms.catapult_1"
+    ],
+    "deck": [
+      {
+        "key": "realms.stennis",
+        "count": 1
+      },
+      {
+        "key": "realms.dijkstra",
+        "count": 1
+      },
+      {
+        "key": "realms.thaler",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "realms.banner_nurse",
+        "count": 1
+      },
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "realms.blue_stripes",
+        "count": 3
+      },
+      {
+        "key": "realms.catapult_1",
+        "count": 2
+      },
+      {
+        "key": "realms.kaedwen_siege",
+        "count": 1
+      },
+      {
+        "key": "realms.kaedwen_siege_1",
+        "count": 1
+      },
+      {
+        "key": "realms.ballista",
+        "count": 1
+      },
+      {
+        "key": "realms.ballista_1",
+        "count": 1
+      },
+      {
+        "key": "realms.trebuchet",
+        "count": 1
+      },
+      {
+        "key": "realms.trebuchet_1",
+        "count": 1
+      },
+      {
+        "key": "realms.siege_tower",
+        "count": 1
+      },
+      {
+        "key": "neutral.villen",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 3
+      },
+      {
+        "key": "special.horn",
+        "count": 1
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      },
+      {
+        "key": "weather.fog",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "dijkstra",
+    "name": "Дийкстра",
+    "title": "Цена осады",
+    "faction": "realms",
+    "leaderKey": "realms.foltest_copper",
+    "portraitKey": "realms.dijkstra",
+    "style": "balanced",
+    "description": "Катапульты, осадные мастера и рог Фольтеста. Небольшой осадный ряд быстро превращается в армию.",
+    "hint": "Дождитесь усиления осады. Дождь или точная казнь могут переломить весь раунд.",
+    "signature": [
+      "realms.catapult_1",
+      "realms.kaedwen_siege",
+      "realms.banner_nurse"
+    ],
+    "deck": [
+      {
+        "key": "realms.catapult_1",
+        "count": 2
+      },
+      {
+        "key": "realms.ballista",
+        "count": 1
+      },
+      {
+        "key": "realms.ballista_1",
+        "count": 1
+      },
+      {
+        "key": "realms.trebuchet",
+        "count": 1
+      },
+      {
+        "key": "realms.trebuchet_1",
+        "count": 1
+      },
+      {
+        "key": "realms.siege_tower",
+        "count": 1
+      },
+      {
+        "key": "realms.kaedwen_siege",
+        "count": 1
+      },
+      {
+        "key": "realms.kaedwen_siege_1",
+        "count": 1
+      },
+      {
+        "key": "realms.kaedwen_siege_2",
+        "count": 1
+      },
+      {
+        "key": "realms.banner_nurse",
+        "count": 1
+      },
+      {
+        "key": "realms.stennis",
+        "count": 1
+      },
+      {
+        "key": "realms.dijkstra",
+        "count": 1
+      },
+      {
+        "key": "realms.thaler",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "realms.philippa",
+        "count": 1
+      },
+      {
+        "key": "realms.esterad",
+        "count": 1
+      },
+      {
+        "key": "realms.natalis",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 2
+      },
+      {
+        "key": "weather.clear",
+        "count": 2
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "emhyr",
+    "name": "Эмгыр вар Эмрейс",
+    "title": "Белое Пламя",
+    "faction": "nilfgaard",
+    "leaderKey": "nilfgaard.emhyr_bronze",
+    "portraitKey": "nilfgaard.emhyr_bronze",
+    "style": "balanced",
+    "description": "Отключает обе способности лидеров. Сильные герои, четыре шпиона и запас медиков заставляют играть без привычного козыря.",
+    "hint": "Здесь равный счёт выгоден Нильфгаарду. Планируйте победу без своей способности лидера.",
+    "signature": [
+      "nilfgaard.menno",
+      "nilfgaard.tibor",
+      "nilfgaard.stefan"
+    ],
+    "deck": [
+      {
+        "key": "nilfgaard.stefan",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.shilard",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.vattier",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.menno",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.archer_support",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.archer_support_1",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.siege_support",
+        "count": 1
+      },
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.letho",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.tibor",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.moorvran",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.black_archer",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.black_archer_1",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.heavy_zerri",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.young_emissary",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.young_emissary_1",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.cahir",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.fringilla",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 3
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      },
+      {
+        "key": "weather.frost",
+        "count": 1
+      },
+      {
+        "key": "weather.clear",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "yennefer",
+    "name": "Йеннифэр",
+    "title": "Вторая жизнь",
+    "faction": "nilfgaard",
+    "leaderKey": "nilfgaard.emhyr_gold",
+    "portraitKey": "neutral.yennefer",
+    "style": "economy",
+    "description": "Пять медиков, шпионы и четыре карты имперской бригады. Сброс для неё — продолжение руки.",
+    "hint": "Смотрите не только на поле, но и на сброс. Приманки возвращают медиков для новых цепочек.",
+    "signature": [
+      "neutral.yennefer",
+      "nilfgaard.archer_support",
+      "nilfgaard.imperal_brigade"
+    ],
+    "deck": [
+      {
+        "key": "nilfgaard.stefan",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.shilard",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.vattier",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.menno",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.archer_support",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.archer_support_1",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.siege_support",
+        "count": 1
+      },
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.letho",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.tibor",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.moorvran",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.black_archer",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.black_archer_1",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.imperal_brigade",
+        "count": 4
+      },
+      {
+        "key": "nilfgaard.heavy_zerri",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 3
+      },
+      {
+        "key": "special.horn",
+        "count": 1
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      },
+      {
+        "key": "weather.clear",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "cahir",
+    "name": "Кагыр",
+    "title": "Чёрная пехота",
+    "faction": "nilfgaard",
+    "leaderKey": "nilfgaard.emhyr_silver",
+    "portraitKey": "nilfgaard.cahir",
+    "style": "aggressive",
+    "description": "Имперская бригада и молодые посланники набирают силу вместе. Дождь лидера мешает ответить осадой.",
+    "hint": "Не раскрывайте все усиления сразу. Сохраните ответ на рог и сильнейшую связку.",
+    "signature": [
+      "nilfgaard.imperal_brigade",
+      "nilfgaard.young_emissary",
+      "nilfgaard.cahir"
+    ],
+    "deck": [
+      {
+        "key": "nilfgaard.stefan",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.shilard",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.vattier",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.menno",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.archer_support",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.archer_support_1",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.siege_support",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.black_archer",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.black_archer_1",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.young_emissary",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.young_emissary_1",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.imperal_brigade",
+        "count": 4
+      },
+      {
+        "key": "nilfgaard.cahir",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.letho",
+        "count": 1
+      },
+      {
+        "key": "nilfgaard.tibor",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 2
+      },
+      {
+        "key": "special.horn",
+        "count": 1
+      },
+      {
+        "key": "weather.clear",
+        "count": 1
+      },
+      {
+        "key": "weather.rain",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "francesca",
+    "name": "Францеска",
+    "title": "Дальний прицел",
+    "faction": "scoiatael",
+    "leaderKey": "scoiatael.francesca_gold",
+    "portraitKey": "scoiatael.francesca_gold",
+    "style": "balanced",
+    "description": "Эльфы, Тьма О’Дима и Мильва собирают дальний ряд под рогом. Три лекаря возвращают нужные отряды.",
+    "hint": "Мгла особенно опасна её негероическому дальнему ряду. Герои при этом сохраняют силу.",
+    "signature": [
+      "scoiatael.milva",
+      "scoiatael.elf_skirmisher",
+      "neutral.gaunter_odimm_darkness"
+    ],
+    "deck": [
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.eithne",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.iorveth",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.saskia",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.isengrim",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.havekar_nurse",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.havekar_nurse_1",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.havekar_nurse_2",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.elf_skirmisher",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.elf_skirmisher_1",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.elf_skirmisher_2",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.milva",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.ida",
+        "count": 1
+      },
+      {
+        "key": "neutral.gaunter_odimm_darkness",
+        "count": 3
+      },
+      {
+        "key": "neutral.gaunter_odimm",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.schirru",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 2
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      },
+      {
+        "key": "weather.clear",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "isengrim",
+    "name": "Изенгрим",
+    "title": "Лесная засада",
+    "faction": "scoiatael",
+    "leaderKey": "scoiatael.francesca_copper",
+    "portraitKey": "scoiatael.isengrim",
+    "style": "aggressive",
+    "description": "Две полные группы двойников, гибкая пехота и лишняя карта в стартовой руке. Изенгрим усиливает ближний ряд.",
+    "hint": "Мороз сдерживает ближний бой, но гибкие отряды могут уйти в другой ряд.",
+    "signature": [
+      "scoiatael.isengrim",
+      "scoiatael.havekar_support",
+      "scoiatael.dol_infantry"
+    ],
+    "deck": [
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.isengrim",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.eithne",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.iorveth",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.saskia",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.havekar_nurse",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.havekar_nurse_1",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.havekar_nurse_2",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.havekar_support",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.havekar_support_1",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.havekar_support_2",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.dwarf",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.dwarf_1",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.dwarf_2",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.dol_infantry",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.dol_infantry_1",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.dol_infantry_2",
+        "count": 1
+      },
+      {
+        "key": "scoiatael.milva",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 2
+      },
+      {
+        "key": "special.horn",
+        "count": 1
+      },
+      {
+        "key": "weather.clear",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "eredin",
+    "name": "Эредин",
+    "title": "Дикая Охота",
+    "faction": "monsters",
+    "leaderKey": "monsters.eredin_silver",
+    "portraitKey": "monsters.eredin_silver",
+    "style": "aggressive",
+    "description": "Ведьмы, вампиры и главоглазы выходят полными группами. Рог лидера превращает ближний бой в решающую угрозу.",
+    "hint": "Вынудите потратить группы в разных раундах. Мороз помогает сдержать массовый выход.",
+    "signature": [
+      "monsters.witch_velen",
+      "monsters.katakan",
+      "monsters.arachas_behemoth"
+    ],
+    "deck": [
+      {
+        "key": "monsters.witch_velen",
+        "count": 1
+      },
+      {
+        "key": "monsters.witch_velen_1",
+        "count": 1
+      },
+      {
+        "key": "monsters.witch_velen_2",
+        "count": 1
+      },
+      {
+        "key": "monsters.bruxa",
+        "count": 1
+      },
+      {
+        "key": "monsters.ekkima",
+        "count": 1
+      },
+      {
+        "key": "monsters.fleder",
+        "count": 1
+      },
+      {
+        "key": "monsters.garkain",
+        "count": 1
+      },
+      {
+        "key": "monsters.katakan",
+        "count": 1
+      },
+      {
+        "key": "monsters.arachas",
+        "count": 1
+      },
+      {
+        "key": "monsters.arachas_1",
+        "count": 1
+      },
+      {
+        "key": "monsters.arachas_2",
+        "count": 1
+      },
+      {
+        "key": "monsters.arachas_behemoth",
+        "count": 1
+      },
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "monsters.kayran",
+        "count": 1
+      },
+      {
+        "key": "monsters.imlerith",
+        "count": 1
+      },
+      {
+        "key": "monsters.draug",
+        "count": 1
+      },
+      {
+        "key": "monsters.leshen",
+        "count": 1
+      },
+      {
+        "key": "monsters.toad",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 2
+      },
+      {
+        "key": "weather.clear",
+        "count": 2
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "leshen",
+    "name": "Леший",
+    "title": "Туманная тропа",
+    "faction": "monsters",
+    "leaderKey": "monsters.eredin_copper",
+    "portraitKey": "monsters.leshen",
+    "style": "balanced",
+    "description": "Стая давит в ближнем бою, пока шторм подавляет дальний и осадный ряды. Герои держат строй под погодой.",
+    "hint": "Мороз действует на его стаю, а ясная погода освобождает ваши дальние ряды. Важен порядок розыгрыша.",
+    "signature": [
+      "monsters.leshen",
+      "monsters.katakan",
+      "weather.storm"
+    ],
+    "deck": [
+      {
+        "key": "monsters.witch_velen",
+        "count": 1
+      },
+      {
+        "key": "monsters.witch_velen_1",
+        "count": 1
+      },
+      {
+        "key": "monsters.witch_velen_2",
+        "count": 1
+      },
+      {
+        "key": "monsters.bruxa",
+        "count": 1
+      },
+      {
+        "key": "monsters.ekkima",
+        "count": 1
+      },
+      {
+        "key": "monsters.fleder",
+        "count": 1
+      },
+      {
+        "key": "monsters.garkain",
+        "count": 1
+      },
+      {
+        "key": "monsters.katakan",
+        "count": 1
+      },
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "monsters.imlerith",
+        "count": 1
+      },
+      {
+        "key": "monsters.draug",
+        "count": 1
+      },
+      {
+        "key": "monsters.leshen",
+        "count": 1
+      },
+      {
+        "key": "monsters.kayran",
+        "count": 1
+      },
+      {
+        "key": "monsters.fiend",
+        "count": 1
+      },
+      {
+        "key": "monsters.forktail",
+        "count": 1
+      },
+      {
+        "key": "monsters.werewolf",
+        "count": 1
+      },
+      {
+        "key": "monsters.frightener",
+        "count": 1
+      },
+      {
+        "key": "monsters.gryffin",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 2
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      },
+      {
+        "key": "weather.clear",
+        "count": 1
+      },
+      {
+        "key": "weather.storm",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "cerys",
+    "name": "Керис",
+    "title": "Щитоносицы королевы",
+    "faction": "skellige",
+    "leaderKey": "skellige.king_bran",
+    "portraitKey": "skellige.cerys",
+    "style": "balanced",
+    "description": "Керис призывает щитоносиц, корабли усиливают друг друга, а Бран смягчает погоду. Полные группы без лишних карт.",
+    "hint": "Щитоносицы уязвимы к казни. Не путайте большое преимущество в одном раунде с победой в матче.",
+    "signature": [
+      "skellige.cerys",
+      "skellige.shield_maiden",
+      "skellige.war_longship"
+    ],
+    "deck": [
+      {
+        "key": "skellige.cerys",
+        "count": 1
+      },
+      {
+        "key": "skellige.shield_maiden",
+        "count": 1
+      },
+      {
+        "key": "skellige.shield_maiden_1",
+        "count": 1
+      },
+      {
+        "key": "skellige.shield_maiden_2",
+        "count": 1
+      },
+      {
+        "key": "skellige.craite_warrior",
+        "count": 3
+      },
+      {
+        "key": "skellige.war_longship",
+        "count": 3
+      },
+      {
+        "key": "skellige.light_longship",
+        "count": 3
+      },
+      {
+        "key": "skellige.olaf",
+        "count": 1
+      },
+      {
+        "key": "skellige.birna",
+        "count": 1
+      },
+      {
+        "key": "skellige.hjalmar",
+        "count": 1
+      },
+      {
+        "key": "skellige.kambi",
+        "count": 1
+      },
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 2
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      },
+      {
+        "key": "weather.clear",
+        "count": 1
+      },
+      {
+        "key": "special.horn",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "crach",
+    "name": "Крах ан Крайт",
+    "title": "Возвращение кланов",
+    "faction": "skellige",
+    "leaderKey": "skellige.crach_an_craite",
+    "portraitKey": "skellige.crach_an_craite",
+    "style": "economy",
+    "description": "Собирает группы, возвращает сброс в колоды и разыгрывает их снова. Третий раунд приносит новые подкрепления.",
+    "hint": "Не стройте весь план на медиках: Крах способен убрать сброс. Считайте ещё не вышедшие группы.",
+    "signature": [
+      "skellige.cerys",
+      "skellige.light_longship",
+      "neutral.gaunter_odimm"
+    ],
+    "deck": [
+      {
+        "key": "skellige.cerys",
+        "count": 1
+      },
+      {
+        "key": "skellige.shield_maiden",
+        "count": 1
+      },
+      {
+        "key": "skellige.shield_maiden_1",
+        "count": 1
+      },
+      {
+        "key": "skellige.shield_maiden_2",
+        "count": 1
+      },
+      {
+        "key": "skellige.light_longship",
+        "count": 3
+      },
+      {
+        "key": "neutral.gaunter_odimm",
+        "count": 1
+      },
+      {
+        "key": "neutral.gaunter_odimm_darkness",
+        "count": 3
+      },
+      {
+        "key": "skellige.birna",
+        "count": 1
+      },
+      {
+        "key": "skellige.kambi",
+        "count": 1
+      },
+      {
+        "key": "skellige.olaf",
+        "count": 1
+      },
+      {
+        "key": "skellige.hjalmar",
+        "count": 1
+      },
+      {
+        "key": "skellige.dimun_pirate",
+        "count": 1
+      },
+      {
+        "key": "skellige.draig",
+        "count": 1
+      },
+      {
+        "key": "neutral.geralt",
+        "count": 1
+      },
+      {
+        "key": "neutral.ciri",
+        "count": 1
+      },
+      {
+        "key": "neutral.roach",
+        "count": 1
+      },
+      {
+        "key": "neutral.yennefer",
+        "count": 1
+      },
+      {
+        "key": "neutral.mysterious_elf",
+        "count": 1
+      },
+      {
+        "key": "special.decoy",
+        "count": 2
+      },
+      {
+        "key": "special.scorch",
+        "count": 1
+      },
+      {
+        "key": "weather.clear",
+        "count": 1
+      },
+      {
+        "key": "special.horn",
+        "count": 1
+      }
+    ]
+  }
+]

@@ -1,6 +1,7 @@
 import { TimerSettings, parseTimer, type TimerDraft } from '../settings/TimerSettings'
 import { useCardText } from '../../i18n/cards'
 import { Invitation } from './Invitation'
+import { OpponentSelection } from './OpponentSelection'
 import type { Room } from '../../domain/types'
 import type { SavedDeck } from '../decks/model'
 import { stats } from '../decks/model'
@@ -26,7 +27,8 @@ export type SetupState = TimerDraft & {
   botDeck: string
   difficulty: BotDifficulty
   style: BotStyle
-  deckMode: 'random' | 'faction' | 'custom'
+  deckMode: 'random' | 'faction' | 'custom' | 'opponent'
+  opponent: string
   botFaction: Faction
   botLeader: number
 }
@@ -64,7 +66,10 @@ export function Setup({
       (joinCode || parseTimer(state)) &&
       player &&
       stats(player, catalog).valid &&
-      (state.mode !== 'bot' || state.deckMode !== 'custom' || (bot && stats(bot, catalog).valid))
+      (state.mode !== 'bot' || state.deckMode !== 'custom' || (bot && stats(bot, catalog).valid)) &&
+      (state.mode !== 'bot' ||
+        state.deckMode !== 'opponent' ||
+        catalog.opponents?.some((p) => p.id === state.opponent))
   const leader = catalog.leaders.find((l) => l.key === player?.leaderKey)
   return (
     <div className="setup-screen">
@@ -84,7 +89,9 @@ export function Setup({
           ← Назад
         </button>
       </div>
-      <div className="setup-grid">
+      <div
+        className={`setup-grid ${state.mode === 'bot' && state.deckMode === 'opponent' && !joinCode ? 'has-opponent' : ''}`}
+      >
         <section className="setup-player panel">
           <p className="eyebrow">Ваша сторона</p>
           <label>
@@ -179,23 +186,28 @@ export function Setup({
                   </button>
                 ))}
               </div>
-              <label>
-                Характер соперника
-                <select
-                  value={state.style}
-                  onChange={(e) => onChange({ style: e.target.value as BotStyle })}
-                >
-                  {(Object.keys(STYLES) as BotStyle[]).map((style) => (
-                    <option key={style} value={style}>
-                      {STYLES[style]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <p className="muted">{STYLES_HELP[state.style]}</p>
+              {state.deckMode !== 'opponent' && (
+                <>
+                  <label>
+                    Характер соперника
+                    <select
+                      value={state.style}
+                      onChange={(e) => onChange({ style: e.target.value as BotStyle })}
+                    >
+                      {(Object.keys(STYLES) as BotStyle[]).map((style) => (
+                        <option key={style} value={style}>
+                          {STYLES[style]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <p className="muted">{STYLES_HELP[state.style]}</p>
+                </>
+              )}
               <label>
                 Колода соперника
                 <select
+                  aria-label="Колода соперника"
                   value={state.deckMode}
                   onChange={(e) =>
                     onChange({
@@ -203,11 +215,21 @@ export function Setup({
                     })
                   }
                 >
+                  {!!catalog.opponents?.length && (
+                    <option value="opponent">Персонажи Ведьмака · 12 испытаний</option>
+                  )}
                   <option value="random">Случайная фракция</option>
                   <option value="faction">Выбранная фракция</option>
                   <option value="custom">Колода из моей библиотеки</option>
                 </select>
               </label>
+              {state.deckMode === 'opponent' && (
+                <OpponentSelection
+                  catalog={catalog}
+                  selected={state.opponent}
+                  onSelect={(opponent) => onChange({ opponent })}
+                />
+              )}
               {state.deckMode === 'faction' && (
                 <>
                   <label>

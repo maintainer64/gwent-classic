@@ -25,6 +25,15 @@ export function Dialog({
       ref={ref}
       className={`dialog ${wide ? 'wide' : ''} ${className}`}
       aria-label={title}
+      onKeyDownCapture={(e) => {
+        if (e.key !== 'Escape') return
+        if (e.target instanceof Element && e.target.closest('dialog') !== e.currentTarget) return
+        // Repeated native Escape requests may become non-cancelable. Handle
+        // the key before the browser's close watcher can hide a required dialog.
+        e.preventDefault()
+        e.stopPropagation()
+        onClose?.()
+      }}
       onCancel={(e) => {
         e.preventDefault()
         onClose?.()

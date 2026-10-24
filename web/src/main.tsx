@@ -11,6 +11,7 @@ import './features/match/presentation.css'
 import './features/match/result.css'
 import './features/match/weather.css'
 import './features/lobby/invitation.css'
+import './features/lobby/opponents.css'
 createRoot(document.getElementById('root')!).render(
   <MotionConfig reducedMotion="user">
     <CardLanguageProvider>

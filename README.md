@@ -105,6 +105,20 @@ Playwright сам поднимает отдельный Go-сервер с вр�
 `GWENT_E2E_URL=http://localhost:8080 npm run test:e2e` проверяет уже запущенную
 сборку. Тесты создают собственные анонимные комнаты.
 
+Воспроизводимый турнир ботов против сохранённой прежней политики (из корня репозитория):
+
+```sh
+GWENT_BOT_ARENA_SEEDS=20 go test ./internal/game -run '^TestBotArena$' -v -count=1
+```
+
+Для сравнения hard с normal добавьте `GWENT_BOT_ARENA_OPPONENT=normal`.
+`GWENT_BOT_ARENA_SEED_START` задаёт начало отдельного контрольного набора,
+`GWENT_BOT_ARENA_REPORT` — путь JSON-отчёта. Идентичные раздачи проверяются
+со сменой стороны новой политики; турнир охватывает все пять фракций.
+Без этих переменных длительный турнир пропускается в обычных Go-тестах.
+Реализация и оставшиеся этапы: [BOT_AI_PLAN.md](BOT_AI_PLAN.md).
+Двенадцать персонажей с фиксированными колодами: [OPPONENTS.md](OPPONENTS.md).
+
 Референс поля и источники изображений: [VISUAL_REFERENCE.md](VISUAL_REFERENCE.md).
 Подробности протокола и размещения: [MULTIPLAYER.md](MULTIPLAYER.md).
 Проверенные правила и границы сравнения с оригиналом: [PARITY.md](PARITY.md).

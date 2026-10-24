@@ -58,8 +58,17 @@ test('complete bot game, actual card play, reconnect and Russian interface', asy
   await page.getByRole('button', { name: 'Начать партию', exact: true }).click()
   await expect(page.getByRole('dialog', { name: 'Подготовьте стартовую руку' })).toBeVisible()
   await expect(page.locator('.hand-gallery-card')).toHaveCount(10)
+  const mulligan = page.getByRole('dialog', { name: 'Подготовьте стартовую руку' })
+  for (let n = 0; n < 3; n++) {
+    await page.keyboard.press('Escape')
+    await expect(mulligan).toBeVisible()
+  }
   await page.locator('[data-zone=preview][aria-pressed=true]').click()
   await expect(page.getByRole('dialog')).toContainText('ещё 1')
+  for (let n = 0; n < 3; n++) {
+    await page.keyboard.press('Escape')
+    await expect(mulligan).toBeVisible()
+  }
   await page.locator('[data-zone=preview][aria-pressed=true]').click()
   await expect(page.getByRole('dialog', { name: 'Подготовьте стартовую руку' })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Спасовать', exact: true })).toBeEnabled()
@@ -264,9 +273,9 @@ test('custom bot deck and leader with a two-stage discard/draw choice', async ({
     .getByRole('button', { name: leader.nameRu, exact: true })
     .click()
   await page.getByRole('button', { name: 'Использовать колоду', exact: true }).click()
-  await page.getByLabel('Характер соперника').selectOption('economy')
   await page.getByRole('button', { name: 'Сложная', exact: true }).click()
   await page.getByLabel('Колода соперника').selectOption('custom')
+  await page.getByLabel('Характер соперника').selectOption('economy')
   await page
     .getByRole('combobox', { name: 'Колода бота', exact: true })
     .selectOption({ label: 'Скеллиге · Скеллиге' })

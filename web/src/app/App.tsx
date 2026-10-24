@@ -51,9 +51,10 @@ const readSetup = (): SetupState => {
     style: ['balanced', 'aggressive', 'economy'].includes(saved.style ?? '')
       ? saved.style!
       : 'balanced',
-    deckMode: ['random', 'faction', 'custom'].includes(saved.deckMode ?? '')
+    deckMode: ['random', 'faction', 'custom', 'opponent'].includes(saved.deckMode ?? '')
       ? saved.deckMode!
-      : 'random',
+      : 'opponent',
+    opponent: typeof saved.opponent === 'string' ? saved.opponent : 'geralt',
     botFaction: (['realms', 'nilfgaard', 'monsters', 'scoiatael', 'skellige'].includes(
       saved.botFaction ?? '',
     )
@@ -128,6 +129,10 @@ export function App() {
         setDecks(library)
         setSettings((old) => ({
           ...old,
+          opponent: c.opponents?.some((p) => p.id === old.opponent)
+            ? old.opponent
+            : (c.opponents?.[0]?.id ?? ''),
+          deckMode: old.deckMode === 'opponent' && !c.opponents?.length ? 'random' : old.deckMode,
           playerDeck: library.some((d) => d.id === old.playerDeck)
             ? old.playerDeck
             : (library[0]?.id ?? ''),
@@ -266,6 +271,7 @@ export function App() {
           style: settings.style,
           deckMode: settings.deckMode,
         }
+        if (settings.deckMode === 'opponent') bot.opponent = settings.opponent
         if (settings.deckMode === 'faction') {
           bot.faction = settings.botFaction
           bot.leader = settings.botLeader
@@ -384,9 +390,22 @@ export function App() {
                         Пригласить друга
                       </button>
                     </div>
-                    <button className="text-button hero-decks" onClick={() => edit('library')}>
-                      Сначала соберу колоду →
-                    </button>
+                    <div className="hero-links">
+                      <button className="text-button hero-decks" onClick={() => edit('library')}>
+                        Сначала соберу колоду →
+                      </button>
+                      {!!catalog.opponents?.length && (
+                        <button
+                          className="text-button"
+                          onClick={() => {
+                            change({ mode: 'bot', deckMode: 'opponent' })
+                            setScreen('setup')
+                          }}
+                        >
+                          Испытания · 12 соперников →
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="hero-cards" aria-hidden="true">
                     {[8, 3, 15].map((id, i) => {

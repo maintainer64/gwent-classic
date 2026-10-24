@@ -177,16 +177,18 @@ export function CardBrowser({
   title,
   cards,
   onClose,
+  closeLabel = 'Вернуться к игре',
 }: {
   title: string
   cards: GameCard[]
   onClose: () => void
+  closeLabel?: string
 }) {
   const [uid, setUid] = useState(cards.at(-1)?.uid)
   const selected = cards.find((card) => card.uid === uid) ?? cards.at(-1)
   const close = (
     <button className="button quiet" onClick={onClose}>
-      Вернуться к игре
+      {closeLabel}
     </button>
   )
   if (!selected)

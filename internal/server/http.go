@@ -179,7 +179,7 @@ func (a *API) Handler() http.Handler {
 			}
 			user := token(w, r, a.SecureCookie)
 			if r.URL.Path == "/api/catalog" && r.Method == http.MethodGet {
-				respond(w, 200, map[string]any{"leaders": game.LeaderOptions(a.Catalog), "cards": game.DeckCatalog(a.Catalog), "factions": game.Factions})
+				respond(w, 200, map[string]any{"leaders": game.LeaderOptions(a.Catalog), "cards": game.DeckCatalog(a.Catalog), "factions": game.Factions, "opponents": game.OpponentCatalog(a.Catalog)})
 				return
 			}
 			if r.URL.Path == "/api/rooms" && r.Method == http.MethodGet {

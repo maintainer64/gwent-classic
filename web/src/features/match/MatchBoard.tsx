@@ -103,12 +103,14 @@ function PlayerPanel({
   active,
   me,
   portrait,
+  avatar,
   onLeader,
 }: {
   player: Player
   active: boolean
   me: boolean
   portrait: string
+  avatar?: string
   onLeader: () => void
 }) {
   const { name } = useCardText()
@@ -120,7 +122,11 @@ function PlayerPanel({
     >
       <div className="player-summary">
         <div className="player-portrait">
-          <img src="/img/icons/profile.png" alt="" />
+          <img
+            className={avatar ? 'character-avatar' : ''}
+            src={avatar ?? '/img/icons/profile.png'}
+            alt=""
+          />
           <img className="portrait-frame" src="/img/icons/icon_player_border.png" alt="" />
           <img
             className="faction-shield"
@@ -843,6 +849,11 @@ export function MatchBoard({
           <div className="match-layout">
             <PlayerPanel
               player={other}
+              avatar={
+                room.mode === 'bot'
+                  ? catalog.opponents?.find((p) => p.id === room.bot?.opponent)?.image
+                  : undefined
+              }
               me={false}
               active={(event?.actor ?? room.turn) !== room.seat}
               portrait={

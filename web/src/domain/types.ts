@@ -43,6 +43,20 @@ export type Catalog = {
   cards: DeckCard[]
   leaders: LeaderChoice[]
   factions: Faction[]
+  opponents?: Opponent[]
+}
+export type Opponent = {
+  id: string
+  name: string
+  title: string
+  faction: Faction
+  leader: number
+  image: string
+  style: BotStyle
+  description: string
+  hint: string
+  signature: string[]
+  deck: DeckEntry[]
 }
 export type DeckEntry = { key?: string; def: number; count: number }
 export type Player = {
@@ -72,7 +86,8 @@ export type Player = {
 export type BotSettings = {
   difficulty: BotDifficulty
   style: BotStyle
-  deckMode: 'random' | 'faction' | 'custom'
+  deckMode: 'random' | 'faction' | 'custom' | 'opponent'
+  opponent?: string
   faction?: Faction
   leader?: number
   deck?: DeckEntry[]
