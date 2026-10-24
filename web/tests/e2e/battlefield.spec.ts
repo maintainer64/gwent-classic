@@ -1,10 +1,11 @@
+import { mockMatchBootstrap } from './bootstrap'
 import { expect, test } from '@playwright/test'
-import type { BattleRow, Catalog, GameCard, Player, Room } from '../../src/domain/types'
+import type { BattleRow, GameCard, Player, Room } from '../../src/domain/types'
 
 test('reference board: full rows, original art and proportions at desktop and tablet sizes', async ({
   page,
 }) => {
-  const catalog = (await (await page.request.get('/api/catalog')).json()) as Catalog
+  const catalog = await mockMatchBootstrap(page)
   let serial = 0
   const card = (key: string, power?: number): GameCard => {
     const c = catalog.cards.find((c) => c.key === key)!

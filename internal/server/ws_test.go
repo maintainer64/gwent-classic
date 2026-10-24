@@ -83,6 +83,11 @@ func writeClientFrame(conn net.Conn, opcode byte, payload []byte) error {
 // wsDial performs the client half of the RFC 6455 handshake over raw TCP.
 func wsDial(t *testing.T, serverURL, cookieValue string) (net.Conn, *bufio.Reader) {
 	t.Helper()
+	return wsDialStatus(t, serverURL, cookieValue, http.StatusSwitchingProtocols)
+}
+
+func wsDialStatus(t *testing.T, serverURL, cookieValue string, wantStatus int) (net.Conn, *bufio.Reader) {
+	t.Helper()
 	u, err := url.Parse(serverURL)
 	if err != nil {
 		t.Fatal(err)
@@ -91,6 +96,8 @@ func wsDial(t *testing.T, serverURL, cookieValue string) (net.Conn, *bufio.Reade
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() { _ = conn.Close() })
+	_ = conn.SetDeadline(time.Now().Add(5 * time.Second))
 	key := base64.StdEncoding.EncodeToString([]byte("0123456789abcdef"))
 	request := "GET " + u.Path + " HTTP/1.1\r\n" +
 		"Host: " + u.Host + "\r\n" +
@@ -120,13 +127,63 @@ func wsDial(t *testing.T, serverURL, cookieValue string) (net.Conn, *bufio.Reade
 			accept = strings.TrimSpace(strings.TrimPrefix(line, "Sec-WebSocket-Accept:"))
 		}
 	}
-	if !strings.Contains(status, "101") {
-		t.Fatalf("expected 101 switching protocols, got %q", strings.TrimSpace(status))
+	if !strings.HasPrefix(status, fmt.Sprintf("HTTP/1.1 %d ", wantStatus)) {
+		t.Fatalf("expected %d, got %q", wantStatus, strings.TrimSpace(status))
 	}
-	if want := wsAcceptKey(key); accept != want {
+	if want := wsAcceptKey(key); wantStatus == http.StatusSwitchingProtocols && accept != want {
 		t.Fatalf("bad accept key: got %q want %q", accept, want)
 	}
+	_ = conn.SetDeadline(time.Time{})
 	return conn, br
+}
+
+func TestWebSocketReconnectLimitDoesNotBlockOtherPlayersOnSameIP(t *testing.T) {
+	store, err := NewStore(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	api := NewAPI(store, fixture(), t.TempDir())
+	srv := httptest.NewServer(api.Handler())
+	defer srv.Close()
+	paths := make([]string, 2)
+	cookies := make([]string, 2)
+	for i := range paths {
+		player := client(t)
+		status, room := post(t, player, srv.URL+"/api/rooms", map[string]any{"name": "Player", "mode": "bot", "faction": "realms"})
+		if status != http.StatusCreated {
+			t.Fatalf("create: %d %+v", status, room)
+		}
+		paths[i] = srv.URL + "/api/rooms/" + room["code"].(string)
+		cookies[i] = player.Jar.Cookies(mustURL(t, srv.URL))[0].Value
+	}
+	for i := 0; i < 12; i++ {
+		path := paths[0]
+		if i%2 == 0 {
+			path += "/ws"
+		}
+		conn, _ := wsDial(t, path, cookies[0])
+		_ = conn.Close()
+	}
+	// Both upgrade routes share the same player's reconnect budget.
+	for _, suffix := range []string{"/ws", ""} {
+		conn, _ := wsDialStatus(t, paths[0]+suffix, cookies[0], http.StatusTooManyRequests)
+		_ = conn.Close()
+	}
+	// A second browser behind the same router still receives its live state.
+	conn, reader := wsDial(t, paths[1]+"/ws", cookies[1])
+	defer conn.Close()
+	_ = conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+	_, payload, err := readServerFrame(reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var view game.View
+	if err := json.Unmarshal(payload, &view); err != nil {
+		t.Fatal(err)
+	}
+	if view.Code != strings.TrimPrefix(paths[1], srv.URL+"/api/rooms/") {
+		t.Fatal("second player did not receive their room")
+	}
 }
 
 func TestWebSocketFrames(t *testing.T) {

@@ -1,3 +1,4 @@
+import { mockMatchBootstrap } from './bootstrap'
 import { expect, test } from '@playwright/test'
 import type { BattleRow, Catalog, GameCard, Move, Player, Room } from '../../src/domain/types'
 
@@ -5,7 +6,7 @@ import type { BattleRow, Catalog, GameCard, Move, Player, Room } from '../../src
 // and card-zone changes are independently tested in revival_test.go.
 for (const chained of [false, true]) {
   test(`agile Medic destination: ${chained ? 'chained' : 'initial'} revival`, async ({ page }) => {
-    const catalog = (await (await page.request.get('/api/catalog')).json()) as Catalog
+    const catalog = await mockMatchBootstrap(page)
     const card = (uid: string, predicate: (c: Catalog['cards'][number]) => boolean): GameCard => {
       const definition = catalog.cards.find(predicate)!
       return { ...definition, def: definition.id, uid, special: false }

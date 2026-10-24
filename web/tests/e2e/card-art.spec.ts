@@ -1,10 +1,10 @@
+import { mockMatchBootstrap } from './bootstrap'
 import { expect, test } from '@playwright/test'
-import type { Catalog } from '../../src/domain/types'
 
 test('composed cards: RU/EN text, original SM artwork, leaders and persistent language', async ({
   page,
 }) => {
-  const catalog = (await (await page.request.get('/api/catalog')).json()) as Catalog
+  const catalog = await mockMatchBootstrap(page)
   for (const card of [...catalog.cards, ...catalog.leaders]) {
     expect(card.descriptionEn, card.key).toBeTruthy()
     expect(card.description, card.key).toBeTruthy()

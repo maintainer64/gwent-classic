@@ -44,6 +44,15 @@ jobs:
       - name: Install test browser
         working-directory: web
         run: npx playwright install --with-deps chromium
+      # API smoke deliberately creates several rooms, including an invalid
+      # request. Browser tests need an independent rate-limit window.
+      - name: Reset API rate budgets before browser tests
+        env:
+          PORT: '18085'
+          IMAGE_TAG: ci
+        run: |
+          docker compose restart app
+          curl --fail --silent --show-error --retry 20 --retry-connrefused --retry-delay 1 http://127.0.0.1:18085/healthz
       - name: Browser tests against production container
         working-directory: web
         env:

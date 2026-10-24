@@ -1,10 +1,11 @@
+import { mockMatchBootstrap } from './bootstrap'
 import { expect, test, type Page, type WebSocketRoute } from '@playwright/test'
 import type { Catalog, GameCard, Move, Player, Room } from '../../src/domain/types'
 
 // UI interaction contracts use real catalog art and a deterministic server snapshot.
 // Normal bot/PvP tests exercise these gestures against the Go server as well.
 async function setup(page: Page, turn = 0) {
-  const catalog = (await (await page.request.get('/api/catalog')).json()) as Catalog
+  const catalog = await mockMatchBootstrap(page)
   const card = (uid: string, predicate: (c: Catalog['cards'][number]) => boolean): GameCard => {
     const c = catalog.cards.find(predicate)!
     return { ...c, uid, def: c.id, special: ['special', 'weather'].includes(c.faction) }

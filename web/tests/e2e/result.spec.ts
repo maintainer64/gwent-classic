@@ -1,11 +1,12 @@
+import { mockMatchBootstrap } from './bootstrap'
 import { expect, test } from '@playwright/test'
-import type { Catalog, Player, Room } from '../../src/domain/types'
+import type { Player, Room } from '../../src/domain/types'
 
 for (const result of ['win', 'lose', 'draw'] as const) {
   test(`result ${result}: original emblem, large scores, correct seat and tablet layout`, async ({
     page,
   }) => {
-    const catalog = (await (await page.request.get('/api/catalog')).json()) as Catalog
+    const catalog = await mockMatchBootstrap(page)
     const player = (name: string, faction: Player['faction'], wins: number): Player => {
       const leader = catalog.leaders.find((l) => l.faction === faction)!
       return {

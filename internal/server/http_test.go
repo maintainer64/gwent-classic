@@ -53,6 +53,36 @@ func get(t *testing.T, c *http.Client, url string) (int, map[string]any) {
 	}
 	return resp.StatusCode, body
 }
+
+func TestAPIRateLimitStaysSharedAcrossPlayersOnSameIP(t *testing.T) {
+	store, err := NewStore(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	handler := NewAPI(store, fixture(), t.TempDir()).Handler()
+	for i := 0; i <= 180; i++ {
+		req := httptest.NewRequest(http.MethodGet, "/api/unknown", nil)
+		req.RemoteAddr = "192.0.2.1:1234"
+		req.AddCookie(&http.Cookie{Name: cookieName, Value: strings.Repeat(string('a'+rune(i%2)), 64)})
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, req)
+		want := http.StatusNotFound
+		if i == 180 {
+			want = http.StatusTooManyRequests
+		}
+		if response.Code != want {
+			t.Fatalf("request %d: got %d, want %d", i+1, response.Code, want)
+		}
+	}
+	other := httptest.NewRequest(http.MethodGet, "/api/unknown", nil)
+	other.RemoteAddr = "192.0.2.2:1234"
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, other)
+	if response.Code != http.StatusNotFound {
+		t.Fatalf("another IP was blocked: %d", response.Code)
+	}
+}
+
 func TestAnonymousTwoPlayerMatchPersistenceAndTTL(t *testing.T) {
 	dir := t.TempDir()
 	store, err := NewStore(dir)

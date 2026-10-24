@@ -1,8 +1,9 @@
+import { mockMatchBootstrap } from './bootstrap'
 import { expect, test, type Page, type WebSocketRoute } from '@playwright/test'
-import type { BoardFrame, Catalog, GameCard, Player, Room } from '../../src/domain/types'
+import type { BoardFrame, GameCard, Player, Room } from '../../src/domain/types'
 
 async function fixture(page: Page, initialWeather = '') {
-  const catalog = (await (await page.request.get('/api/catalog')).json()) as Catalog
+  const catalog = await mockMatchBootstrap(page)
   const card = (uid: string, key: string): GameCard => {
     const d = catalog.cards.find((c) => c.key === key)!
     return {

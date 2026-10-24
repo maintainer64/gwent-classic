@@ -257,7 +257,9 @@ func (a *API) Handler() http.Handler {
 			// room path when an Upgrade header is present (both are one hop).
 			wsRequested := suffix == "ws" || (suffix == "" && strings.EqualFold(r.Header.Get("Upgrade"), "websocket"))
 			if wsRequested && r.Method == http.MethodGet {
-				if !a.rate("ws:"+remoteIP(r), 12) {
+				// Players behind one router have independent reconnect budgets.
+				// The API-wide IP limit above still bounds all upgrade attempts.
+				if !a.rate("ws:"+user, 12) {
 					fail(w, 429, "Too many connections")
 					return
 				}
